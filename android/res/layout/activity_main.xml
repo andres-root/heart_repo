@@ -9,4 +9,15 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".Main" >
 
+    <TextView
+        android:id="@+id/textMsg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="57dp"
+        android:text="Cosito desde Arduino: "
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
 </RelativeLayout>

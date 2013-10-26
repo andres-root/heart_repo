@@ -17,6 +17,7 @@ import android.content.Intent;
 import android.util.Log;
 import android.view.Menu;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class Main extends Activity {
@@ -40,6 +41,7 @@ public class Main extends Activity {
 	   //Miscellaneous
 	   private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 	   private static String address = "00:06:66:4F:B8:12";
+	   private TextView textMsg;
 	   
 	   @Override
 	   protected void onCreate(Bundle savedInstanceState) 
@@ -47,13 +49,13 @@ public class Main extends Activity {
 		   		 
 		   		 super.onCreate(savedInstanceState);
 		   		 setContentView(R.layout.activity_main);
+		   		 textMsg = (TextView) findViewById(R.id.textMsg); 
 		   		 		   		 
 		   		 initializeHandler();
 		   		 
 		   		 btAdapter = BluetoothAdapter.getDefaultAdapter();
 		   		 checkBTState();
-		   		 
-	 
+		   		 	 
 	   }
 	   	
 	   private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException 
@@ -66,10 +68,8 @@ public class Main extends Activity {
 								  final Method  m = device.getClass().getMethod("createInsecureRfcommSocketToServiceRecord", new Class[] { UUID.class });
 					              return (BluetoothSocket) m.invoke(device, MY_UUID);
 					              
-					          }catch(Exception e) {
-					              
-					        	  Log.e(TAG_DEBUG, "Could not create Insecure RFComm Connection",e);
-					              
+					          }catch(Exception err){					              
+					        	  Log.e(TAG_DEBUG, "Could not create Insecure RFComm Connection",err);					              
 					          }
 					          
 					      }
@@ -131,18 +131,15 @@ public class Main extends Activity {
 		        
 		   		  	btSocket.close();
 		        
-		   	  }catch(IOException err){
-		    	
-		   		  errorExit("In onPause() and failed to close socket." + err.getMessage() + ".");
-		   		  
+		   	  }catch(IOException err){		    	
+		   		  errorExit("In onPause() and failed to close socket." + err.getMessage() + ".");		   		  
 		   	  }
-		   	  
-		   
+		   	     
 	   }
 	   
 	   private void checkBTState() 
 	   {
-
+	   
 			    if(btAdapter==null){ 
 			      
 			    	errorExit("Bluetooth not support");
@@ -164,8 +161,7 @@ public class Main extends Activity {
 			    }
 		    
 		}
-	   
-	   	   
+	   	   	   
 	   public void initializeHandler()
 	   {
 		  
@@ -173,7 +169,8 @@ public class Main extends Activity {
 			    	
 				   public void handleMessage(android.os.Message msg) {
 			    		
-							   switch (msg.what) {
+							   switch (msg.what)
+							   {
 					            
 							   			case RECIEVE_MESSAGE:													
 					            	
@@ -184,18 +181,20 @@ public class Main extends Activity {
 					            	
 							   						int endOfLineIndex = sb.indexOf("\r\n");
 					            	
-							   						if (endOfLineIndex > 0) { 											
+							   						if(endOfLineIndex > 0) 
+							   						{ 											
 					            		
-							   						String sbprint = sb.substring(0, endOfLineIndex);				
-							   						sb.delete(0, sb.length());										
+							   							String sbprint = sb.substring(0, endOfLineIndex);				
+							   							sb.delete(0, sb.length());										
+							   							textMsg.setText("");
+							   							//txtArduino.setText("Data from Arduino: " + sbprint); 	        
+							   							//btnOff.setEnabled(true);
+							   							//btnOn.setEnabled(true);
 					                	
-							   						//txtArduino.setText("Data from Arduino: " + sbprint); 	        
-							   						//btnOff.setEnabled(true);
-							   						//btnOn.setEnabled(true);
-					                	
-					                }
+							   						}
 					            	
-					            	break;
+							   			break;
+							   			
 					    		}
 					   
 			        };
