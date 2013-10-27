@@ -68,6 +68,10 @@ public class Main extends Activity{
 	   private static String address = "00:06:66:4F:B8:12";
 	   private TextView textMsg;
 	   
+	   int cont = -1;
+	   
+	   //TEMP DATA
+	   ArrayList<String> items = new  ArrayList<String>();
 	   
 	   /*GRAFICA
 	    */
@@ -82,12 +86,38 @@ public class Main extends Activity{
 	   
 	   		
 	   		private double getRandom(){
-	   			
+	   			/*
 				double high = 3;
 				double low = 0.5;
 				return Math.random() * (high - low) + low;
-			
-		}
+			*/
+	   			
+	   			try{
+	   				
+	   				if(cont < items.size()){
+	   					
+	   					cont++;
+	   					
+	   				}else{
+	   					
+	   					cont = 0;
+	   					
+	   				}
+	   				
+	   				double result = Double.parseDouble(items.get(cont));
+	   				
+	   				Log.d("RESULTADO MOMENTANEO: ", String.valueOf(result));
+	   				
+	   				return result;
+	   				
+	   			}catch(Exception err){
+	   				
+	   				   cont = 0;
+	   				   return 123.0;
+	   				
+	   			}
+	   			
+	   		}
 	   
 	   /*
 			GRAFICA
@@ -341,13 +371,11 @@ public class Main extends Activity{
 	
 		private void getData(String data)
 		{
-			
-				
-				ArrayList<String> items =  new  ArrayList<String>(Arrays.asList(data.split(",")));
-			
+							
+				items =  new  ArrayList<String>(Arrays.asList(data.split(",")));
 				//textMsg.setText(String.valueOf( items.size() ));
 				//Log.d(TAG_DEBUG, String.valueOf( items.size() ) );			
-			
+				
 		}
 	
 		private void sendData()
