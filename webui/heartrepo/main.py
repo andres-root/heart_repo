@@ -62,8 +62,47 @@ def read_template(a):
     c.close()
     return data
 
-i18n = {}
 
+i18n = {}
+i18n['Add Measurement'] = 'Agregar Medici&oacute;n'
+i18n['Add User'] = 'Agrega Usuario'
+i18n['Admin'] = 'Administrador'
+i18n['BPM'] = 'Latidos por Minuto'
+i18n['Birth Date'] = 'Fecha de Nacimiento'
+i18n['Create User'] = 'Crear Usuario'
+i18n['Daily'] = 'Diaria'
+i18n['Date'] = 'Fecha'
+i18n['Do you Drink?'] = 'Consume Licor?'
+i18n['Do you Have a Heart Condition?'] = ('Tiene una Enfermedad del ' +
+                                          'Coraz&oacute;n?')
+i18n['Do you Smoke?'] = 'Fuma?'
+i18n['Doctor'] = 'Doctor'
+i18n['Drinker'] = 'Consume Licor?'
+i18n['Edit Profile'] = 'Editar Perfil'
+i18n['Email'] = 'Correo Electronico'
+i18n['Email How Often'] = 'Periodicidad de Email'
+i18n['Heart Care Dashboard'] = 'Cuadro de Control'
+i18n['Heart Condition'] = 'Enfermedad del Corazon'
+i18n['Measurements of'] = 'Mediciones de '
+i18n['Measurements'] = 'Mediciones'
+i18n['New'] = 'Nueva'
+i18n['My Profile'] = 'Mi Perfil'
+i18n['My Patients'] = 'Mis Pacientes'
+i18n['Register'] = 'Registro'
+i18n['Dashboard'] = 'Cuadro de Control'
+i18n['MobileHeartCare'] = 'MobileHeartCare'
+i18n['Monthly'] = 'Mensual'
+i18n['Name'] = 'Nombre'
+i18n['No'] = 'No'
+i18n['Smoker'] = 'Fumador'
+pep8 = 'Usa esta pantalla para crear nuevos  usuarios y asignarle roles'
+i18n['Use this screen to create new users and assign roles to them'] = pep8
+i18n['User'] = 'Usuario'
+i18n['User Type'] = 'Tipo de Usuario'
+i18n['Users'] = 'Usuarios'
+i18n['Weekly'] = 'Semanal'
+i18n['Yes'] = 'Si'
+i18n['admin'] = 'Admin'
 
 def t(s):
     if not(s in i18n):
@@ -158,6 +197,10 @@ def msg(title, message):
 
 def edit_profile2(e, r):
     pass
+
+
+def get_lang():
+    return "en"
 
 
 def show_dashboard(e, r):
@@ -327,11 +370,17 @@ def menu(e, r):
     links.append({"to": "?ac=json_measurements", 'label': 'JSON'})
     links.append({"to": "?ac=my_profile", 'label': t('My Profile')})
     #
-    links.append({"to": "?ac=my_patients", 'label': t('My Patients')})
+    #links.append({"to": "?ac=my_patients", 'label': t('My Patients')})
     links.append({"to": "?ac=register", 'label': t('Register')})
+
 
     for i in links:
         a += "<a href='"+i["to"]+"'>"+i["label"]+"</a>&nbsp;"
+
+    a += """<select onchange='location.href=\"/\"+this.value'>
+    <option value=en>English</option>
+    <option value=es>Espa&ntilde;ol</option
+    </select>"""
     a += "</div>\n"
     a += "<div class=wrapper>"
     e(a)
@@ -397,7 +446,9 @@ class MainHandler(webapp2.RequestHandler):
             e(read_template("./template/header.html"))
             menu(e, r)
             if ac == "default":
-                e(read_template("./template/start.html"))
+                dx = read_template("./template/start.html")
+                dx = dx.replace("[#lang]", get_lang())
+                e(dx)
             elif ac == "show_dashboard":
                 show_dashboard(e, r)
             elif ac == "show_add_measurement_form":
@@ -431,4 +482,10 @@ class MainHandler(webapp2.RequestHandler):
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler)
+], debug=True)
+app = webapp2.WSGIApplication([
+    ('/en', MainHandler)
+], debug=True)
+app = webapp2.WSGIApplication([
+    ('/es', MainHandler)
 ], debug=True)
