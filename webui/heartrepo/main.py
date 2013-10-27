@@ -54,7 +54,7 @@ def add_user(e, r):
     e("<label>Name:</label><br/><input type=text name=name ><br/>")
     e("<label>Email How Often:</label><br/><select name=email_how_often>")
     e("<option value='weekly'>Weekly</option>")
-    e("<option value='monthly'>monthly</option>")
+    e("<option value='monthly'>Monthly</option>")
     e("<option value='daily'>Daily</option>")
     e("</select><br/>")
 
@@ -68,16 +68,35 @@ def add_user(e, r):
     e("</form>")
 
 
+def msg(title, message):
+    m2 = "<img class=msg_icon src='/media/msg.png'>" + message
+    return("<div class=msg>" + title +
+           "<br><div class=msg_contents>" + m2 + "</div></div>")
+
+
+def edit_profile2(e, r):
+    pass
+
+
 def edit_profile(e, r):
-    
+    #get current user email
+    email="dataf4l@gmail.com"
+    u = db.GqlQuery("SELECT * FROM User WHERE email='"+email+"'")
+    c = 0
+    for i in u:
+        c += 1
+    if c == 0:
+        e("no user found.")
+        return
     e("<form method=POST action='?'>")
-    e("<input type=hidden name=ac value=add_user2>")
-    e("<h1> Add User</h1>")
-    e("<label>Email:</label><br/><input type=text name=email ><br/>")
+    e("<input type=hidden name=ac value=edit_profile2>")
+    e("<h1> Edit Profile</h1>")
+    e("<label>Email:</label><br/><input type=text name=email value='"+em+"'>")
+    e("<br/>")
     e("<label>Name:</label><br/><input type=text name=name ><br/>")
     e("<label>Email How Often:</label><br/><select name=email_how_often>")
     e("<option value='weekly'>Weekly</option>")
-    e("<option value='monthly'>monthly</option>")
+    e("<option value='monthly'>Monthly</option>")
     e("<option value='daily'>Daily</option>")
     e("</select><br/>")
 
@@ -222,6 +241,8 @@ class MainHandler(webapp2.RequestHandler):
             e(read_template("./template/header.html"))
             menu(e, r)
             if ac == "default":
+                e(read_template("./template/start.html"))
+            elif ac == "show_add_measurement_form":
                 show_add_measurement_form(e, r)
             elif ac == "show_users":
                 show_users(e, r)
@@ -237,9 +258,11 @@ class MainHandler(webapp2.RequestHandler):
                 user_drop(e, r)
             elif ac == "edit_profile":
                 edit_profile(e, r)
+            elif ac == "edit_profile2":
+                edit_profile2(e, r)
 
             else:
-                e("Invalid Action:" + r.get("ac"))
+                e(msg("ERROR", "Invalid Action:" + r.get("ac")))
             e(read_template("./template/footer.html"))
 
 app = webapp2.WSGIApplication([
