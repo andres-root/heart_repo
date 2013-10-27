@@ -29,6 +29,9 @@
                 <category android:name="android.intent.category.LAUNCHER" /><action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
+        <activity android:name="com.health.view.RealtimeGraph">
+            <intent-filter></intent-filter>
+        </activity>
     </application>
 
 </manifest>

@@ -7,7 +7,11 @@
 		android:orientation="vertical"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content">
-
+		<LinearLayout
+		    android:orientation="vertical"
+			android:layout_width="fill_parent"
+			android:layout_height="250dip"
+			android:id="@+id/graph1" />
 		
 		<LinearLayout
 		    android:id="@+id/graph2"
@@ -15,15 +19,6 @@
 		    android:layout_height="250dip"
 		    android:orientation="vertical" />
 
-		 <TextView
-		        android:id="@+id/textMsg"
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content"
-		        android:layout_marginTop="57dp"
-		        android:text="Cosito desde Arduino: "
-		        android:textAppearance="?android:attr/textAppearanceLarge" />
-		
-		
 	</LinearLayout>
 	
 </ScrollView>
