@@ -24,21 +24,21 @@ public class Splash extends Activity {
     
     }
 	
-	 private Runnable getRunnableStartApp(){
-	         
-		 
+	 private Runnable getRunnableStartApp()
+	 {
+	         		 
 	         Runnable runnable = new Runnable(){
 	             
-	         public void run(){
-	
-		        		 Intent intent = new Intent(Splash.this, Main.class);
-		        		 startActivity(intent);
-		        		 finish();
-	            }
+			         public void run()
+			         {
+			
+				        		 Intent intent = new Intent(Splash.this, Main.class);
+				        		 startActivity(intent);
+				        		 finish();
+			         }
 	         
 	         };
-	         
-	         
+	         	         
 	         return runnable;
 	         
 	  }

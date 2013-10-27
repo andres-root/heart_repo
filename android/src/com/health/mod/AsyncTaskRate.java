@@ -11,7 +11,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -31,13 +30,16 @@ public class AsyncTaskRate extends AsyncTask<String, Void, String>
 				String jsonR = ""; 
 	
 				values = new ArrayList<NameValuePair>(1);    	    
-				values.add(new BasicNameValuePair("", arg0[0]));
-				values.add(new BasicNameValuePair("",  arg0[1]));
+				values.add(new BasicNameValuePair("email", arg0[0]));
+				values.add(new BasicNameValuePair("BPM",  arg0[1]));
+				values.add(new BasicNameValuePair("when", arg0[2]));
+				values.add(new BasicNameValuePair("ac","add_measurement"));
+				
 	   	   	
 				try{    
 				 
 						   client = new DefaultHttpClient();
-						   methodPost = new HttpPost("");
+						   methodPost = new HttpPost("http://heartrepo.appspot.com/");
 				           
 						   methodPost.setHeader("Accept","application/json");
 				 				           
@@ -54,7 +56,7 @@ public class AsyncTaskRate extends AsyncTask<String, Void, String>
 				           return jsonR;
 				           
 				}catch(Exception error){
-						Log.d("ERROR LOGIN: ", error.getMessage());
+						Log.d("ERROR SEND RATE: ", error.getMessage());
 						return "";
 				}
 	
