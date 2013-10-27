@@ -74,8 +74,7 @@ public class Main extends Activity{
 	   ArrayList<String> items = new  ArrayList<String>();
 	   
 	   /*
-	    * GRAFICA
-	    * 
+	    * GRAFICA	 
 	    */
 	   
 	   	private final Handler mHandler = new Handler();
@@ -259,6 +258,7 @@ public class Main extends Activity{
 		   	    
 		   	    /*
 		   	     * GRAFICA
+		   	     * 
 		   	     */
 		   	    
 		   	   mTimer2 = new Runnable(){
@@ -350,7 +350,7 @@ public class Main extends Activity{
 							   							String sbprint = sb.substring(0, endOfLineIndex);				
 							   							sb.delete(0, sb.length());										
 							   							
-							   							textMsg.setText("INICIO:  "+String.valueOf(sbprint)+": FIN!!!");
+							   							//textMsg.setText("INICIO:  "+String.valueOf(sbprint)+": FIN!!!");
 							   							
 							   							getData(sbprint);							   							
 							   							//sendData();
