@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
@@ -34,6 +35,8 @@ import android.view.Menu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+
 public class Main extends Activity{
 	
 	   /* 
@@ -42,8 +45,8 @@ public class Main extends Activity{
 	   		private Button buttonTree;
 	   		private Button buttonFourt;
 	   */
-	   
-	   private List<String> bufferData;
+	   	   	
+	
 	
 	   private static final String TAG_DEBUG = "Bluetooth: "; 
 	   
@@ -62,6 +65,8 @@ public class Main extends Activity{
 	   private static String address = "00:06:66:4F:B8:12";
 	   private TextView textMsg;
 	   
+	   private String bufferData;
+	   
 	   @Override
 	   protected void onCreate(Bundle savedInstanceState) 
 	   {
@@ -69,15 +74,16 @@ public class Main extends Activity{
 		   		 super.onCreate(savedInstanceState);
 		   		 setContentView(R.layout.activity_main);
 		   		 textMsg = (TextView) findViewById(R.id.textMsg); 
-		   		 		   		 
+		   		 	
+		   		 //getData("");
+		   		 
 		   		 initializeHandler();		   		 
 		   		 btAdapter = BluetoothAdapter.getDefaultAdapter();
 		   		 checkBTState();
 		   		 		   		 
-		   		 bufferData = new ArrayList<String>();
+		   		 //bufferData = new ArrayList<String>();
 		   		 //AsyncTaskRate rate = new AsyncTaskRate();
-		   		 //rate.execute("roluisker@gmail.com","6",getDateTime());
-		   		 		   				   		
+		   		 //rate.execute("roluisker@gmail.com","6",getDateTime());		   		 		   				   		
 	   }
 	   
 	   private String getDateTime()
@@ -105,8 +111,7 @@ public class Main extends Activity{
 					          
 					      }
 					      
-					      return  device.createRfcommSocketToServiceRecord(MY_UUID);
-					      
+					      return  device.createRfcommSocketToServiceRecord(MY_UUID);					      
 	   }
 	   
 	   
@@ -153,6 +158,7 @@ public class Main extends Activity{
 	   }
 	   
 	   
+	   
 	   @Override
 	   public void onPause()
 	   {
@@ -169,6 +175,7 @@ public class Main extends Activity{
 		   	  }
 		   	     
 	   }
+	   
 	   
 	   private void checkBTState()
 	   {
@@ -221,8 +228,8 @@ public class Main extends Activity{
 					            		
 							   							String sbprint = sb.substring(0, endOfLineIndex);				
 							   							sb.delete(0, sb.length());										
-							   							textMsg.setText(sbprint);
-							   														   							
+							   							
+							   							getData(sbprint);							   							
 							   							//sendData();
 							   							//AsyncTaskRate rate = new AsyncTaskRate();
 							   					   		//rate.execute("roluisker@gmail.com",sbprint,getDateTime());
@@ -236,9 +243,21 @@ public class Main extends Activity{
 			        };
 			        
 				};
-				
-						   
+										   
 	   }
+	
+		private void getData(String data)
+		{
+			
+				
+				ArrayList<String> items =  new  ArrayList<String>(Arrays.asList(data.split(",")));
+			
+				
+				
+				//textMsg.setText(String.valueOf( items.size() ));
+				//Log.d(TAG_DEBUG, String.valueOf( items.size() ) );			
+			
+		}
 	
 		private void sendData()
 		{
