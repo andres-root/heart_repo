@@ -21,6 +21,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
+import com.health.mod.AsyncTaskRate;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GraphViewSeries;
 import com.jjoe64.graphview.LineGraphView;
@@ -97,11 +98,13 @@ public class Main extends Activity{
 	   				}else{
 	   					
 	   					return 123.0;
-	   					//cont = 0;
 	   					
 	   				}
 	   				
 	   				double result =  ( Double.parseDouble(items.get(cont)) ) * -1;
+	   				
+	   				AsyncTaskRate rate = new AsyncTaskRate();
+			   		rate.execute("roluisker@gmail.com",String.valueOf(result),getDateTime());
 	   				
 	   				Log.d("RESULTADO MOMENTANEO: ", String.valueOf(result));
 	   				
@@ -127,7 +130,7 @@ public class Main extends Activity{
 		   		 
 		   		 super.onCreate(savedInstanceState);
 		   		 setContentView(R.layout.activity_main);
-		   		 textMsg = (TextView) findViewById(R.id.textMsg); 
+		   		 //textMsg = (TextView) findViewById(R.id.textMsg); 
 		   		 	
 		   		 //getData("");
 		   		 

@@ -1,6 +1,6 @@
 package com.health.view;
 
-import com.health.heart.Main;
+
 import com.health.heart.R;
 import android.app.Activity;
 import android.content.Intent;
@@ -32,7 +32,7 @@ public class Splash extends Activity {
 			         public void run()
 			         {
 			
-				        		 Intent intent = new Intent(Splash.this, Main.class);
+				        		 Intent intent = new Intent(Splash.this, ActivityLogin.class);
 				        		 startActivity(intent);
 				        		 finish();
 			         }

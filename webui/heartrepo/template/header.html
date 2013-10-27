@@ -1,11 +1,12 @@
 <html>
 	<head>
 		<title>MobileHeartCare - Watching your Heart, so you don't have to</title>
+		
 <style>
 
-	input, select , i, p, td, th, .msg_contents , a, h1, label , .menu {
-		font-family:"OpenSans", Helvetica, Verdana;
-	}
+input, select , i, p, td, th, .msg_contents , a, h1, label , .menu {
+	font-family:"OpenSans", Helvetica, Verdana;
+}
 body {
 	margin:	0px;
 	padding: 0px;
@@ -26,8 +27,15 @@ input, select {
 	border:2px solid #52b9dd;
 	background-color:white;
 	border-radius:4px;
+	padding:5px;
 }
 
+/** form divider */
+.l {
+	float:left;
+	width:400px;
+	margin:20px;
+}
 i {
 	font-size:14pt;
 	color:black;
@@ -47,26 +55,37 @@ p{
 
 input[type=submit] {
 	color:white;
-	border:2px solid rgb(30,30,30);
+	border:3px solid rgb(240,240,240);
 	background-color:#52b9dd;
-
+	padding:10px;
+	padding-left:30px;
+	padding-right:30px;
+	border-radius:20px;
 }
 td {
-	color:#52b9dd;
-	font-size:10pt;
+	padding:5px;
+	color:rgb(30,30,30);
+	font-size:11pt;
+	border:1px solid #bfbfbf;
+}
+.dataset {
+	width:80%;
 }
 th {
-	background-color:white;
+	color:white;
 	font-size:14pt;
 	font-weight:normal;
-	color:rgb(209, 113, 126);
+	background-color:rgb(209, 113, 126);
+/*	white-space:nowrap;*/
+	padding:4px;
+	border:1px solid #bfbfbf;
 }
 tr:hover td {
 	background-color:#52b9dd;
 	color:white;
 }
 a:hover {
-	border:1px solid rgb(120,120,120);
+	border:2px solid rgb(120,120,120);
 
 }
 .msg {
@@ -102,12 +121,13 @@ a {
 	padding:8px;
 	padding-left:14px;
 	padding-right:14px;
-	border:1px solid rgb(30,30,30);
-	border-radius:10px;
+	border:2px solid white;
+	border-radius:15px;
 }
 h1 {
 	font-size:40pt;
-	color:rgb(200,200,200);
+	color:white;
+	text-shadow: 0.05em 0.05em #999;
 }
 label {
 	display:inline-block;
@@ -121,7 +141,7 @@ label {
 	padding-right:100px;
 }
 .menu {
-	background-color:black;
+	background-color:#52b9dd;
 	color:white;
 	font-size:14pt;
 	padding:3px;
@@ -142,6 +162,13 @@ hr {
 	padding-left:120px;
 	padding-right:120px;
 
+}
+.foot {
+	clear:both;
+	margin-top:200px;
+}
+.menu {
+	background-color:
 }
 
 </style>
