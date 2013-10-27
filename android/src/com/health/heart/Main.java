@@ -4,11 +4,26 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 import java.util.UUID;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -16,18 +31,22 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.util.Log;
 import android.view.Menu;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class Main extends Activity {
+public class Main extends Activity{
 	
-	   private Button buttonOne;
-	   private Button buttonTwo;
-	   private Button buttonTree;
-	   private Button buttonFourt;
+	   /* 
+	   		private Button buttonOne;
+	   		private Button buttonTwo;
+	   		private Button buttonTree;
+	   		private Button buttonFourt;
+	   */
+	   
+	   private List<String> bufferData;
+	
 	   private static final String TAG_DEBUG = "Bluetooth: "; 
-	
+	   
 	   //Handler
 	   private  Handler h;
 	   final int RECIEVE_MESSAGE = 1;
@@ -51,13 +70,25 @@ public class Main extends Activity {
 		   		 setContentView(R.layout.activity_main);
 		   		 textMsg = (TextView) findViewById(R.id.textMsg); 
 		   		 		   		 
-		   		 initializeHandler();
-		   		 
+		   		 initializeHandler();		   		 
 		   		 btAdapter = BluetoothAdapter.getDefaultAdapter();
 		   		 checkBTState();
-		   		 	 
+		   		 		   		 
+		   		 bufferData = new ArrayList<String>();
+		   		 //AsyncTaskRate rate = new AsyncTaskRate();
+		   		 //rate.execute("roluisker@gmail.com","6",getDateTime());
+		   		 		   				   		
 	   }
-	   	
+	   
+	   private String getDateTime()
+	   {
+		   
+		   Calendar c = Calendar.getInstance();
+	   	   SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	   	   return df.format(c.getTime());		   
+		   
+	   }
+	   
 	   private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException 
 	   {
 		      
@@ -75,8 +106,9 @@ public class Main extends Activity {
 					      }
 					      
 					      return  device.createRfcommSocketToServiceRecord(MY_UUID);
-		      
+					      
 	   }
+	   
 	   
 	   @Override
 	   public void onResume()
@@ -89,8 +121,8 @@ public class Main extends Activity {
 		   			
 		   				btSocket = createBluetoothSocket(device);
 		   			
-		   		}catch(IOException err)
-		   		{		   					   			
+		   		}catch(IOException err){
+		   			   					   			
 		   				errorExit(err.getMessage());		   			
 		   		}
 		   		
@@ -101,13 +133,13 @@ public class Main extends Activity {
 		   				btSocket.connect();
 		   				Log.d(TAG_DEBUG, "....Connection ok...");
 		         
-		       }catch(IOException e){
+		        }catch(IOException e){
 		         
 		       			try{
 		           
 		       					btSocket.close();
 		           
-		       			}catch (IOException e2){ 		       				
+		       			}catch(IOException e2){ 		       				
 		       					errorExit("In onResume() and unable to close socket during connection failure" + e2.getMessage() + ".");		         
 		       			}
 		       	
@@ -119,6 +151,7 @@ public class Main extends Activity {
 		   	    mConnectedThread.start();	
 		   
 	   }
+	   
 	   
 	   @Override
 	   public void onPause()
@@ -137,7 +170,7 @@ public class Main extends Activity {
 		   	     
 	   }
 	   
-	   private void checkBTState() 
+	   private void checkBTState()
 	   {
 	   
 			    if(btAdapter==null){ 
@@ -146,30 +179,32 @@ public class Main extends Activity {
 			      
 			    }else{
 			    	
-			      if (btAdapter.isEnabled()) 
-			      {
-			    	  
-			    	  Log.d(TAG_DEBUG, "...Bluetooth ON...");
-			      
-			      }else{
-			        
-			        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-			        startActivityForResult(enableBtIntent, 1);
-			        
-			      }
+				      if(btAdapter.isEnabled()) 
+				      {
+				    	  
+				    	  Log.d(TAG_DEBUG, "...Bluetooth ON...");
+				      
+				      }else{
+				        
+				    	  Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+				    	  startActivityForResult(enableBtIntent, 1);
+				        
+				      }
 			      
 			    }
 		    
 		}
-	   	   	   
-	   public void initializeHandler()
-	   {
-		  
+	   	   	 	   	   	   
+	@SuppressLint("HandlerLeak")
+	public void initializeHandler()
+	{
+		
 			   h = new Handler(){
 			    	
-				   public void handleMessage(android.os.Message msg) {
+				   public void handleMessage(android.os.Message msg)
+				   {
 			    		
-							   switch (msg.what)
+							   switch(msg.what)
 							   {
 					            
 							   			case RECIEVE_MESSAGE:													
@@ -186,13 +221,14 @@ public class Main extends Activity {
 					            		
 							   							String sbprint = sb.substring(0, endOfLineIndex);				
 							   							sb.delete(0, sb.length());										
-							   							textMsg.setText("");
-							   							//txtArduino.setText("Data from Arduino: " + sbprint); 	        
-							   							//btnOff.setEnabled(true);
-							   							//btnOn.setEnabled(true);
+							   							textMsg.setText(sbprint);
+							   														   							
+							   							//sendData();
+							   							//AsyncTaskRate rate = new AsyncTaskRate();
+							   					   		//rate.execute("roluisker@gmail.com",sbprint,getDateTime());
 					                	
 							   						}
-					            	
+							   			
 							   			break;
 							   			
 					    		}
@@ -200,11 +236,56 @@ public class Main extends Activity {
 			        };
 			        
 				};
-		   
+				
+						   
 	   }
+	
+		private void sendData()
+		{
+			
+			
+			HttpClient client;
+			HttpPost methodPost;
+			
+			HttpResponse response;
+			List<NameValuePair> values;
+			
+			String jsonR = ""; 
+			
+			values = new ArrayList<NameValuePair>(1);    	    
+			values.add(new BasicNameValuePair("email", "roluisker@gmail.com"));
+			values.add(new BasicNameValuePair("BPM",  "70"));
+			values.add(new BasicNameValuePair("when", "2013-01-01 00:00:00"));
+			values.add(new BasicNameValuePair("ac","add_measurement"));
+			
+			try{    
+				 
+				   client = new DefaultHttpClient();
+				   methodPost = new HttpPost("http://heartrepo.appspot.com/");
+		           
+				   methodPost.setHeader("Accept","application/json");
+		 				           
+				   methodPost.setEntity(new UrlEncodedFormEntity(values));
+		        
+				   response = client.execute(methodPost);
+		           
+		           HttpEntity httpEnti = response.getEntity();
+		           
+		           jsonR = EntityUtils.toString(httpEnti);
+		           
+		           Log.i("Response LOGIN   : ", jsonR);		      
+		           
+		           //return jsonR;
+		           
+			}catch(Exception error){					
+					Log.d("ERROR SEND RATE: ", error.getMessage());
+					//return "";					
+			}
+			
+		}
 
 	   @Override
-	   public boolean onCreateOptionsMenu(Menu menu) {
+	   public boolean onCreateOptionsMenu(Menu menu){
 		
 		   	 //Inflate the menu; this adds items to the action bar if it is present.
 		   	 getMenuInflater().inflate(R.menu.main, menu);
@@ -237,7 +318,8 @@ public class Main extends Activity {
 		        mmOutStream = tmpOut;
 		    }
 		 
-		    public void run(){
+		    public void run()
+		    {
 		        
 		    	byte[] buffer = new byte[256];  
 		        int bytes; 
@@ -254,6 +336,7 @@ public class Main extends Activity {
 		            }
 		        	
 		        }
+		        
 		    }
 
 		    public void write(String message) 
@@ -267,7 +350,7 @@ public class Main extends Activity {
 		            
 		    		mmOutStream.write(msgBuffer);
 		            
-		        }catch(IOException e) {		            
+		        }catch(IOException e){		            
 		        	
 		        	Log.d(TAG_DEBUG, "...Error data send: " + e.getMessage() + "...");		            		          
 		        
