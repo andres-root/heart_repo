@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 # vim: ts=4 shiftwidth=4 expandtab
+global lang
 
 import webapp2
 from google.appengine.ext import db
 from collections import OrderedDict
+
+lang = "es"
 
 
 class User(db.Model):
@@ -64,6 +67,7 @@ def read_template(a):
 
 
 i18n = {}
+i18n['Language'] = 'Idioma...'
 i18n['Add Measurement'] = 'Agregar Medici&oacute;n'
 i18n['Add User'] = 'Agrega Usuario'
 i18n['Admin'] = 'Administrador'
@@ -104,7 +108,12 @@ i18n['Weekly'] = 'Semanal'
 i18n['Yes'] = 'Si'
 i18n['admin'] = 'Admin'
 
+
 def t(s):
+    l = get_lang()
+    if l == "en":
+        return s
+
     if not(s in i18n):
         return "["+s+"]"
     return i18n[s]
@@ -200,7 +209,8 @@ def edit_profile2(e, r):
 
 
 def get_lang():
-    return "en"
+    global lang
+    return lang
 
 
 def show_dashboard(e, r):
@@ -373,13 +383,13 @@ def menu(e, r):
     #links.append({"to": "?ac=my_patients", 'label': t('My Patients')})
     links.append({"to": "?ac=register", 'label': t('Register')})
 
-
     for i in links:
         a += "<a href='"+i["to"]+"'>"+i["label"]+"</a>&nbsp;"
 
     a += """<select onchange='location.href=\"/\"+this.value'>
+    <option value=en>"""+t("Language")+"""</option>
     <option value=en>English</option>
-    <option value=es>Espa&ntilde;ol</option
+    <option value=es>Espa&ntilde;ol</option>
     </select>"""
     a += "</div>\n"
     a += "<div class=wrapper>"
@@ -435,10 +445,19 @@ class MainHandler(webapp2.RequestHandler):
         self.get()
 
     def get(self):
+        global lang
         #name = self.request.get("name", "none")
         ac = self.request.get("ac", "default")
         r = self.request
         e = self.response.write
+
+        #lang
+        lname = r.url.replace("http://", "").split("/")[1].split("?")[0]
+        if lname == "":
+            lname = "es"
+        langs = ("en", "es")
+        if lname in langs:
+            lang = lname
 
         if ac == "json_measurements":
             json_measurements(e, r)
@@ -446,7 +465,7 @@ class MainHandler(webapp2.RequestHandler):
             e(read_template("./template/header.html"))
             menu(e, r)
             if ac == "default":
-                dx = read_template("./template/start.html")
+                dx = read_template("./template/start."+get_lang()+".html")
                 dx = dx.replace("[#lang]", get_lang())
                 e(dx)
             elif ac == "show_dashboard":
@@ -480,12 +499,7 @@ class MainHandler(webapp2.RequestHandler):
                 e(msg("ERROR", "Invalid Action:" + r.get("ac")))
             e(read_template("./template/footer.html"))
 
+
 app = webapp2.WSGIApplication([
-    ('/', MainHandler)
-], debug=True)
-app = webapp2.WSGIApplication([
-    ('/en', MainHandler)
-], debug=True)
-app = webapp2.WSGIApplication([
-    ('/es', MainHandler)
+    ('/', MainHandler), ('/es', MainHandler), ('/en', MainHandler)
 ], debug=True)
