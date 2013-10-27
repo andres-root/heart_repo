@@ -3,7 +3,7 @@
 
 import webapp2
 from google.appengine.ext import db
-
+from collections import OrderedDict
 
 class User(db.Model):
     email = db.StringProperty()
@@ -29,6 +29,8 @@ class Measurement(db.Model):
     dminute = db.StringProperty()
     when = db.StringProperty()
     bpm = db.StringProperty()
+    lon = db.StringProperty()
+    lat = db.StringProperty()
 
     def __getitem__(self, x):
         return getattr(self, x)
@@ -36,9 +38,13 @@ class Measurement(db.Model):
 
 def view_measurements(e, r):
     email = r.get("email")
-    e("<h1>Measurements of: " + email + "</h1>")
     m = db.GqlQuery("SELECT * FROM Measurement WHERE email='"+email+"'")
-    show_m(e, r, m)
+    show_m(e, r, m, email)
+    show_info(e)
+
+def show_info(e):
+    e(read_template("./template/info-rates.html"))
+
 
 def user_drop(e, r):
     email = r.get("email")
@@ -60,6 +66,7 @@ def add_user(e, r):
     e("<input type=hidden name=ac value=add_user2>")
     e("<h1> Add User</h1>")
     e("<p>Use this screen to create new users and assign roles to them</p>")
+    e("<div class=l>")
     e("<label>Email:</label><br/><input type=text name=email ><br/>")
     e("<label>Name:</label><br/><input type=text name=name ><br/>")
     e("<label>Email How Often:</label><br/><select name=email_how_often>")
@@ -68,8 +75,38 @@ def add_user(e, r):
     e("<option value='daily'>Daily</option>")
     e("</select><br/>")
 
-    e("<label>Birth Date:</label><br/><input type=text name=birth_date ><br/>")
-    e("<label>User Type:</label><br/><select name=user_type>")
+    e("<label>Birth Date:</label><br/>")
+    e("<select name=birth_year>")
+    for i in range(1900, 2100):
+        e("<option value="+str(i)+">"+str(i)+"</option>")
+    e("</select>")
+    e("<select name=birth_month>")
+    months = OrderedDict()
+    months["01"] = "Jan"
+    months["02"] = "Feb"
+    months["03"] = "Mar"
+    months["04"] = "Apr"
+    months["05"] = "May"
+    months["06"] = "Jun"
+    months["07"] = "Jul"
+    months["08"] = "Aug"
+    months["09"] = "Sep"
+    months["10"] = "Oct"
+    months["11"] = "Nov"
+    months["12"] = "Dec"
+    for i in months:
+        e("<option value="+i+">"+months[i]+"</option>")
+    e("</select>")
+    e("<select name=birth_date>")
+    for i in range(1, 31):
+        e("<option value="+str(i)+">"+str(i)+"</option>")
+    e("</select><br/>")
+
+    e("</div>")
+    e("<div class=l>")
+
+    e("<label>User Type:</label><br/>")
+    e("<select name=user_type>")
     e("<option value='user'>User</option>")
     e("<option value='doctor'>Doctor</option>")
     e("<option value='admin'>admin</option>")
@@ -92,6 +129,8 @@ def add_user(e, r):
     e("</select><br/>")
 
     e("<input type=submit name=submit value='Create User'>")
+    e("</div>")
+    
     e("</form>")
 
 
@@ -111,6 +150,8 @@ def edit_profile2(e, r):
 
 def show_dashboard(e, r):
     e("<h1>Heart Care Dashboard</h1>")
+    e("<script src='./template/reports/html_graphics/Chart.js'></script>")
+    e(read_template("./template/reports/html_graphics/histogram.html"))
 
 
 def edit_profile(e, r):
@@ -154,22 +195,29 @@ def add_user2(e, r):
     u.name = r.get("name")
     u.email = r.get("email")
     u.email_how_often = r.get("email_how_often")
-    u.birth_date = r.get("birth_date")
+    u.birth_date = (r.get("birth_year") + "-" + r.get("birth_month") + "-" +
+                    r.get("birth_date"))
     u.user_type = r.get("user_type")
+    u.smoker = r.get("smoker")
+    u.drinker = r.get("drinker")
+    u.heart_condition = r.get("heart_condition")
     u.save()
-    e("User Created.")
+    e(msg("User Created.", "User Created OK"))
 
 
 def show_users(e, r):
     u = User.all()
     e("<h1>Users</h1>")
-    e("<table border=1>")
+    e("<table border=1 cellspacing=0 cellpadding=0 class=dataset>")
     e("<tr>")
     e("<th>Email</th>")
     e("<th>Name</th>")
     e("<th>Email How Often</th>")
     e("<th>Birth Date</th>")
     e("<th>User Type</th>")
+    e("<th>Smoker</th>")
+    e("<th>Drinker</th>")
+    e("<th>Heart Condition</th>")
 
     e("<th>&nbsp;</th>")
     e("<th>&nbsp;</th>")
@@ -181,8 +229,11 @@ def show_users(e, r):
         e("<td>"+str(i["email_how_often"])+"</td>")
         e("<td>"+str(i["birth_date"])+"</td>")
         e("<td>"+str(i["user_type"])+"</td>")
+        e("<td>"+str(i["smoker"])+"</td>")
+        e("<td>"+str(i["drinker"])+"</td>")
+        e("<td>"+str(i["heart_condition"])+"</td>")
         e("<td><a href='?ac=user_drop&email="+i["email"]+"'>[x]</a></td>")
-        e("<td><a href='?ac=view_measurements&email="+i["email"]+"'>View Measurements</a></td>")
+        e("<td><a href='?ac=view_measurements&email="+i["email"]+"'>Measurements</a></td>")
         e("</tr>")
     e("</table>")
     e("<a href='?ac=add_user'>Add User</a>")
@@ -192,6 +243,8 @@ def add_measurement(e, r):
     mail = r.get("email", "")
     when = r.get("when", "")
     bpm = r.get("bpm", "")
+    lon = r.get("lon", "")
+    lat = r.get("lat", "")
     datepart = when.split(" ")[0]
     hourpart = when.split(" ")[1]
 
@@ -206,6 +259,9 @@ def add_measurement(e, r):
 
     m.when = when
     m.bpm = bpm
+
+    m.lon = lon
+    m.lat = lat
     m.save()
     e(msg("Added", "measurement Added."))
 
@@ -226,10 +282,9 @@ def json_measurements(e, r):
 def menu(e, r):
     a = "<div class=menu>"
     a += """<img onclick='location.href=\"/\";'
-                 width=150
                  valign=middle
                  class=logo
-                 height=50
+                 height=70
                  src='./media/logo.png'
                  alt='HeartCare' />"""
     links = []
@@ -275,19 +330,23 @@ def show_measurements(e, r):
     email = get_email()
     m = db.GqlQuery("SELECT * FROM Measurement WHERE email='"+email+"'")
     show_m(e, r, m, email)
+    show_info(e)
     e("<a href='?ac=show_add_measurement_form'>Add Measurement</a>")
 
 
 def show_m(e, r, m, email):
     e("<h1>Measurements: "+email+"</h1>")
-    e("<table border=1>")
+    e("<table border=1 cellspacing=0 cellpadding=0  class=dataset>")
     e("<tr>")
-    for a in ('Email', 'When', 'BPM'):
+    for a in ('Email', 'Date', 'BPM', 'Lon', "Lat"):
         e("<th>" + a + "</th>")
     e("</tr>")
     for i in m:
         e("<tr><td>" + i["email"] + "</td><td>" + i["when"] + "</td>")
-        e("<td>" + i["bpm"] + "</td></tr>")
+        e("<td>" + str(i["bpm"]) + "</td>")
+        e("<td>" + str(i["lon"]) + "</td>")
+        e("<td>" + str(i["lat"]) + "</td>")
+        e("</tr>")
     e("</table>")
 
 

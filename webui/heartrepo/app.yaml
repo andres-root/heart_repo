@@ -12,6 +12,9 @@ handlers:
 - url: /media
   static_dir: ./media
 
+- url: /template
+  static_dir: ./template
+
 - url: .*
   script: main.app
 
