@@ -221,21 +221,8 @@ public class Main extends Activity{
 					            		
 							   							String sbprint = sb.substring(0, endOfLineIndex);				
 							   							sb.delete(0, sb.length());										
-							   							//textMsg.setText(sbprint);
-							   							
-							   							boolean isAdd = bufferData.add(sbprint);
-							   							
-							   							textMsg.setText( String.valueOf(isAdd) );
-							   							textMsg.setText(" ESPERANDO...." );
-							   							
-							   							if(bufferData.size() >= 100)
-							   							{
-							   								
-							   								textMsg.setText( bufferData.size() );
-							   								bufferData.clear();
-							   								
-							   							}
-							   							
+							   							textMsg.setText(sbprint);
+							   														   							
 							   							//sendData();
 							   							//AsyncTaskRate rate = new AsyncTaskRate();
 							   					   		//rate.execute("roluisker@gmail.com",sbprint,getDateTime());
