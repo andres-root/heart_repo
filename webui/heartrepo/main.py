@@ -5,6 +5,7 @@ import webapp2
 from google.appengine.ext import db
 from collections import OrderedDict
 
+
 class User(db.Model):
     email = db.StringProperty()
     name = db.StringProperty()
@@ -41,6 +42,7 @@ def view_measurements(e, r):
     m = db.GqlQuery("SELECT * FROM Measurement WHERE email='"+email+"'")
     show_m(e, r, m, email)
     show_info(e)
+
 
 def show_info(e):
     e(read_template("./template/info-rates.html"))
@@ -130,7 +132,7 @@ def add_user(e, r):
 
     e("<input type=submit name=submit value='Create User'>")
     e("</div>")
-    
+
     e("</form>")
 
 
@@ -151,6 +153,7 @@ def edit_profile2(e, r):
 def show_dashboard(e, r):
     e("<h1>Heart Care Dashboard</h1>")
     e("<script src='./template/reports/html_graphics/Chart.js'></script>")
+    e("<script>;var jsonvar = " + get_json(get_email()) + ";</script>")
     e(read_template("./template/reports/html_graphics/histogram.html"))
 
 
@@ -233,7 +236,8 @@ def show_users(e, r):
         e("<td>"+str(i["drinker"])+"</td>")
         e("<td>"+str(i["heart_condition"])+"</td>")
         e("<td><a href='?ac=user_drop&email="+i["email"]+"'>[x]</a></td>")
-        e("<td><a href='?ac=view_measurements&email="+i["email"]+"'>Measurements</a></td>")
+        e("<td><a href='?ac=view_measurements&email="+i["email"]+"'>")
+        e("Measurements</a></td>")
         e("</tr>")
     e("</table>")
     e("<a href='?ac=add_user'>Add User</a>")
@@ -267,18 +271,25 @@ def add_measurement(e, r):
 
 
 def json_measurements(e, r):
-    m = Measurement.all()
-    e("[")
+    email = get_email()
+    e(get_json(email))
+
+
+def get_json(email):
+    m = db.GqlQuery("SELECT * FROM Measurement WHERE email='"+email+"'" +
+                    " ORDER BY when DESC")
+    ax = ""
+    ax += "["
     a = []
     for i in m:
         json = "{email:'"+i["email"]+"', when:"
         json += "'"+i["when"]+"',bpm:'"+i["bpm"]+"'}"
         a.append(json)
 
-    e(",".join(a))
-    e("]")
-
-
+    ax += ",".join(a)
+    ax += "]"
+    return ax
+    
 def menu(e, r):
     a = "<div class=menu>"
     a += """<img onclick='location.href=\"/\";'
@@ -387,8 +398,6 @@ class MainHandler(webapp2.RequestHandler):
                 user_drop(e, r)
             elif ac == "view_measurements":
                 view_measurements(e, r)
-
-                
             elif ac == "edit_profile":
                 edit_profile(e, r)
             elif ac == "edit_profile2":
