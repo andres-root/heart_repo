@@ -21,6 +21,11 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.GraphViewSeries;
+import com.jjoe64.graphview.LineGraphView;
+import com.jjoe64.graphview.GraphView.GraphViewData;
+
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -30,12 +35,12 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.Menu;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-
 
 public class Main extends Activity{
 	
@@ -46,8 +51,6 @@ public class Main extends Activity{
 	   		private Button buttonFourt;
 	   */
 	   	   	
-	
-	
 	   private static final String TAG_DEBUG = "Bluetooth: "; 
 	   
 	   //Handler
@@ -65,7 +68,58 @@ public class Main extends Activity{
 	   private static String address = "00:06:66:4F:B8:12";
 	   private TextView textMsg;
 	   
-	   private String bufferData;
+	   int cont = -1;
+	   
+	   //TEMP DATA
+	   ArrayList<String> items = new  ArrayList<String>();
+	   
+	   /*
+	    * GRAFICA	 
+	    */
+	   
+	   	private final Handler mHandler = new Handler();
+	   	private Runnable mTimer2;
+	   	private GraphView graphView;
+	   	private GraphViewSeries exampleSeries2;
+	   	private double graph2LastXValue = 5d;
+	   	private GraphViewSeries exampleSeries3;
+	   
+	   		
+	   	private double getBuffer(){
+
+	   			try{
+	   				
+	   				if(cont < items.size())
+	   				{
+	   					
+	   					cont++;
+	   					
+	   				}else{
+	   					
+	   					return 123.0;
+	   					//cont = 0;
+	   					
+	   				}
+	   				
+	   				double result =  ( Double.parseDouble(items.get(cont)) ) * -1;
+	   				
+	   				Log.d("RESULTADO MOMENTANEO: ", String.valueOf(result));
+	   				
+	   				return result;
+	   				
+	   			}catch(Exception err)
+	   			{
+	   				
+	   				   cont = 0;
+	   				   return 123.0;
+	   				
+	   			}
+	   			
+	   		}
+	   
+	   /*
+			GRAFICA
+	    */
 	   
 	   @Override
 	   protected void onCreate(Bundle savedInstanceState) 
@@ -83,7 +137,53 @@ public class Main extends Activity{
 		   		 		   		 
 		   		 //bufferData = new ArrayList<String>();
 		   		 //AsyncTaskRate rate = new AsyncTaskRate();
-		   		 //rate.execute("roluisker@gmail.com","6",getDateTime());		   		 		   				   		
+		   		 //rate.execute("roluisker@gmail.com","6",getDateTime());	
+		   		 
+		   		 
+		   		 /*
+		   		  * 
+		   		  * GRAFICA
+		   		  */
+		   		 
+		   		 	exampleSeries3 = new GraphViewSeries(new GraphViewData[] {});
+		   		 	exampleSeries3.getStyle().color = Color.CYAN;
+
+					graphView = new LineGraphView(
+							this // context
+							, "GraphViewDemo" // heading
+					);
+					
+
+				graphView.addSeries(exampleSeries3);
+
+
+				exampleSeries2 = new GraphViewSeries(new GraphViewData[] {
+						new GraphViewData(1, 2.0d)
+						, new GraphViewData(2, 1.5d)
+						, new GraphViewData(2.5, 3.0d) 
+						, new GraphViewData(3, 2.5d)
+						, new GraphViewData(4, 1.0d)
+						, new GraphViewData(5, 3.0d)
+				});
+
+				graphView = new LineGraphView(
+						this
+						, "GraphViewDemo"
+				);
+				((LineGraphView) graphView).setDrawBackground(true);
+				
+				graphView.addSeries(exampleSeries2); 
+				graphView.setViewPort(1, 8);
+				graphView.setScalable(true);
+
+				LinearLayout layout = (LinearLayout) findViewById(R.id.graph2);
+				layout.addView(graphView);
+		   		 
+		   		 
+		   		 /*
+		   		  * GRAFICA
+		   		  * 
+		   		  */
 	   }
 	   
 	   private String getDateTime()
@@ -126,7 +226,8 @@ public class Main extends Activity{
 		   			
 		   				btSocket = createBluetoothSocket(device);
 		   			
-		   		}catch(IOException err){
+		   		}catch(IOException err)
+		   		{
 		   			   					   			
 		   				errorExit(err.getMessage());		   			
 		   		}
@@ -154,6 +255,26 @@ public class Main extends Activity{
 		   	   
 		   	    mConnectedThread = new ConnectedThread(btSocket);
 		   	    mConnectedThread.start();	
+		   	    
+		   	    /*
+		   	     * GRAFICA
+		   	     * 
+		   	     */
+		   	    
+		   	   mTimer2 = new Runnable(){
+					@Override
+					public void run(){
+						graph2LastXValue += 1d;
+						exampleSeries2.appendData(new GraphViewData(graph2LastXValue, getBuffer()), true, 10);
+						mHandler.postDelayed(this, 200);
+					}
+				};
+				
+				mHandler.postDelayed(mTimer2, 1000);
+
+		   	    /*
+		   	     * GRAFICA
+		   	     */
 		   
 	   }
 	   
@@ -162,7 +283,7 @@ public class Main extends Activity{
 	   @Override
 	   public void onPause()
 	   {
-		   
+		   mHandler.removeCallbacks(mTimer2);
 		   	  super.onPause();		   	  
 		   	  Log.d(TAG_DEBUG, "PAUSE TIME!!");
 		   	  
@@ -229,6 +350,8 @@ public class Main extends Activity{
 							   							String sbprint = sb.substring(0, endOfLineIndex);				
 							   							sb.delete(0, sb.length());										
 							   							
+							   							//textMsg.setText("INICIO:  "+String.valueOf(sbprint)+": FIN!!!");
+							   							
 							   							getData(sbprint);							   							
 							   							//sendData();
 							   							//AsyncTaskRate rate = new AsyncTaskRate();
@@ -248,15 +371,13 @@ public class Main extends Activity{
 	
 		private void getData(String data)
 		{
-			
+							
+				items =  new  ArrayList<String>(Arrays.asList(data.split(",")));
 				
-				ArrayList<String> items =  new  ArrayList<String>(Arrays.asList(data.split(",")));
-			
-				
-				
+				cont = 0;
 				//textMsg.setText(String.valueOf( items.size() ));
 				//Log.d(TAG_DEBUG, String.valueOf( items.size() ) );			
-			
+				
 		}
 	
 		private void sendData()

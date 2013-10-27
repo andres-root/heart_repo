@@ -12,6 +12,9 @@ class User(db.Model):
     email_how_often = db.StringProperty()  # diario, mensual, semanal,
     birth_date = db.StringProperty()
     user_type = db.StringProperty()
+    smoker = db.StringProperty()
+    drinker = db.StringProperty()
+    heart_condition = db.StringProperty()
 
     def __getitem__(self, x):
         return getattr(self, x)
@@ -30,6 +33,12 @@ class Measurement(db.Model):
     def __getitem__(self, x):
         return getattr(self, x)
 
+
+def view_measurements(e, r):
+    email = r.get("email")
+    e("<h1>Measurements of: " + email + "</h1>")
+    m = db.GqlQuery("SELECT * FROM Measurement WHERE email='"+email+"'")
+    show_m(e, r, m)
 
 def user_drop(e, r):
     email = r.get("email")
@@ -65,8 +74,29 @@ def add_user(e, r):
     e("<option value='doctor'>Doctor</option>")
     e("<option value='admin'>admin</option>")
     e("</select><br/>")
+
+    e("<label>Do you Smoke?:</label><br/><select name=smoker>")
+    e("<option value='0'>No</option>")
+    e("<option value='1'>Yes</option>")
+    e("</select><br/>")
+
+    e("<label>Do you Drink?:</label><br/><select name=drinker>")
+    e("<option value='0'>No</option>")
+    e("<option value='1'>Yes</option>")
+    e("</select><br/>")
+
+    e("<label>Do you Have a Heart Condition?:</label><br/>")
+    e("<select name=heart_condition>")
+    e("<option value='0'>No</option>")
+    e("<option value='1'>Yes</option>")
+    e("</select><br/>")
+
     e("<input type=submit name=submit value='Create User'>")
     e("</form>")
+
+
+def register(e, r):
+    add_user(e, r)
 
 
 def msg(title, message):
@@ -81,6 +111,7 @@ def edit_profile2(e, r):
 
 def show_dashboard(e, r):
     e("<h1>Heart Care Dashboard</h1>")
+
 
 def edit_profile(e, r):
     #get current user email
@@ -141,6 +172,7 @@ def show_users(e, r):
     e("<th>User Type</th>")
 
     e("<th>&nbsp;</th>")
+    e("<th>&nbsp;</th>")
     e("</tr>")
     for i in u:
         e("<tr>")
@@ -150,6 +182,7 @@ def show_users(e, r):
         e("<td>"+str(i["birth_date"])+"</td>")
         e("<td>"+str(i["user_type"])+"</td>")
         e("<td><a href='?ac=user_drop&email="+i["email"]+"'>[x]</a></td>")
+        e("<td><a href='?ac=view_measurements&email="+i["email"]+"'>View Measurements</a></td>")
         e("</tr>")
     e("</table>")
     e("<a href='?ac=add_user'>Add User</a>")
@@ -192,7 +225,13 @@ def json_measurements(e, r):
 
 def menu(e, r):
     a = "<div class=menu>"
-    a += "<img onclick='location.href=\"/\";' width=150 valign=middle class=logo height=50 src='./media/logo.png' alt='HeartCare' /></a>"
+    a += """<img onclick='location.href=\"/\";'
+                 width=150
+                 valign=middle
+                 class=logo
+                 height=50
+                 src='./media/logo.png'
+                 alt='HeartCare' />"""
     links = []
     #usertype
     links.append({"to": "?ac=show_users", 'label': 'Users'})
@@ -203,6 +242,7 @@ def menu(e, r):
     links.append({"to": "?ac=my_profile", 'label': 'My Profile'})
     #
     links.append({"to": "?ac=my_patients", 'label': 'My Patients'})
+    links.append({"to": "?ac=register", 'label': 'Register'})
 
     for i in links:
         a += "<a href='"+i["to"]+"'>"+i["label"]+"</a>&nbsp;"
@@ -212,7 +252,7 @@ def menu(e, r):
 
 
 def show_add_measurement_form(e, r):
-    e("<form method=POST>")
+    e("<form method=POST action='?ac=add_measurement'>")
     e("<input type=hidden name=ac value=add_measurement>")
     e("<h1> Add Measurement</h1>")
     #e("<label>Email:</label>")
@@ -234,7 +274,12 @@ def get_email():
 def show_measurements(e, r):
     email = get_email()
     m = db.GqlQuery("SELECT * FROM Measurement WHERE email='"+email+"'")
-    e("<h1>Measurements</h1>")
+    show_m(e, r, m, email)
+    e("<a href='?ac=show_add_measurement_form'>Add Measurement</a>")
+
+
+def show_m(e, r, m, email):
+    e("<h1>Measurements: "+email+"</h1>")
     e("<table border=1>")
     e("<tr>")
     for a in ('Email', 'When', 'BPM'):
@@ -244,7 +289,7 @@ def show_measurements(e, r):
         e("<tr><td>" + i["email"] + "</td><td>" + i["when"] + "</td>")
         e("<td>" + i["bpm"] + "</td></tr>")
     e("</table>")
-    e("<a href='?ac=show_add_measurement_form'>Add Measurement</a>")
+
 
 class MainHandler(webapp2.RequestHandler):
     def post(self):
@@ -273,15 +318,23 @@ class MainHandler(webapp2.RequestHandler):
                 add_measurement(e, r)
             elif ac == "show_measurements":
                 show_measurements(e, r)
+            elif ac == "register":
+                register(e, r)
             elif ac == "add_user":
                 add_user(e, r)
             elif ac == "add_user2":
                 add_user2(e, r)
             elif ac == "user_drop":
                 user_drop(e, r)
+            elif ac == "view_measurements":
+                view_measurements(e, r)
+
+                
             elif ac == "edit_profile":
                 edit_profile(e, r)
             elif ac == "edit_profile2":
+                edit_profile2(e, r)
+            elif ac == "a":
                 edit_profile2(e, r)
 
             else:
