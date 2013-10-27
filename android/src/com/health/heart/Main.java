@@ -4,7 +4,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.UUID;
+
+import com.health.mod.AsyncTaskRate;
 
 import android.os.Build;
 import android.os.Bundle;
@@ -15,18 +19,21 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.Menu;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class Main extends Activity {
 	
-	   private Button buttonOne;
-	   private Button buttonTwo;
-	   private Button buttonTree;
-	   private Button buttonFourt;
+	   /* 
+	   		private Button buttonOne;
+	   		private Button buttonTwo;
+	   		private Button buttonTree;
+	   		private Button buttonFourt;
+	   */
+	   
 	   private static final String TAG_DEBUG = "Bluetooth: "; 
 	   
 	   //Handler
@@ -51,14 +58,28 @@ public class Main extends Activity {
 		   		 super.onCreate(savedInstanceState);
 		   		 setContentView(R.layout.activity_main);
 		   		 textMsg = (TextView) findViewById(R.id.textMsg); 
-		   		 		   		 
-		   		 initializeHandler();
 		   		 
-		   		 btAdapter = BluetoothAdapter.getDefaultAdapter();
-		   		 checkBTState();
-		   		 	 
+		   		 /*
+		   		 	initializeHandler();		   		 
+		   		 	btAdapter = BluetoothAdapter.getDefaultAdapter();
+		   		 	checkBTState();
+		   		 */
+		   		 
+		   		AsyncTaskRate rate = new AsyncTaskRate();
+		   		rate.execute("roluisker@gmail.com","6",getDateTime());
+		   				   				   		
 	   }
-	   	
+	   
+	   
+	   private String getDateTime()
+	   {
+		   
+		   Calendar c = Calendar.getInstance();
+	   	   SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	   	   return df.format(c.getTime());		   
+		   
+	   }
+	   
 	   private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException 
 	   {
 		      
@@ -79,6 +100,7 @@ public class Main extends Activity {
 		      
 	   }
 	   
+	   /*
 	   @Override
 	   public void onResume()
 	   {
@@ -119,8 +141,9 @@ public class Main extends Activity {
 		   	    mConnectedThread = new ConnectedThread(btSocket);
 		   	    mConnectedThread.start();	
 		   
-	   }
+	   }*/
 	   
+	   /*
 	   @Override
 	   public void onPause()
 	   {
@@ -136,7 +159,7 @@ public class Main extends Activity {
 		   		  errorExit("In onPause() and failed to close socket." + err.getMessage() + ".");		   		  
 		   	  }
 		   	     
-	   }
+	   }*/
 	   
 	   private void checkBTState() 
 	   {
@@ -189,9 +212,7 @@ public class Main extends Activity {
 							   							String sbprint = sb.substring(0, endOfLineIndex);				
 							   							sb.delete(0, sb.length());										
 							   							textMsg.setText(sbprint);
-							   							//txtArduino.setText("Data from Arduino: " + sbprint); 	        
-							   							//btnOff.setEnabled(true);
-							   							//btnOn.setEnabled(true);
+
 					                	
 							   						}
 							   			

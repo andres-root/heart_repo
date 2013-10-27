@@ -10,12 +10,13 @@ import android.widget.EditText;
 
 public class ActivityLogin extends Activity 
 {
-
+	
 	private  EditText user;
 	private  EditText pass;
-	private  Button loginButton;
+	private  Button   loginButton;
 	 
-	public void onCreate(Bundle savedInstanceState){
+	public void onCreate(Bundle savedInstanceState)
+	{
         
 		        super.onCreate(savedInstanceState);
 		        requestWindowFeature(Window.FEATURE_NO_TITLE); 
