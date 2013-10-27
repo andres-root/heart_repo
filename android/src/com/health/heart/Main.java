@@ -85,13 +85,8 @@ public class Main extends Activity{
 	   		private GraphViewSeries exampleSeries3;
 	   
 	   		
-	   		private double getRandom(){
-	   			/*
-				double high = 3;
-				double low = 0.5;
-				return Math.random() * (high - low) + low;
-			*/
-	   			
+	   		private double getBuffer(){
+
 	   			try{
 	   				
 	   				if(cont < items.size()){
@@ -265,7 +260,7 @@ public class Main extends Activity{
 					@Override
 					public void run(){
 						graph2LastXValue += 1d;
-						exampleSeries2.appendData(new GraphViewData(graph2LastXValue, getRandom()), true, 10);
+						exampleSeries2.appendData(new GraphViewData(graph2LastXValue, getBuffer()), true, 10);
 						mHandler.postDelayed(this, 200);
 					}
 				};
