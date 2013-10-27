@@ -50,6 +50,7 @@ def add_user(e, r):
     e("<form method=POST action='?'>")
     e("<input type=hidden name=ac value=add_user2>")
     e("<h1> Add User</h1>")
+    e("<p>Use this screen to create new users and assign roles to them</p>")
     e("<label>Email:</label><br/><input type=text name=email ><br/>")
     e("<label>Name:</label><br/><input type=text name=name ><br/>")
     e("<label>Email How Often:</label><br/><select name=email_how_often>")
@@ -78,13 +79,19 @@ def edit_profile2(e, r):
     pass
 
 
+def show_dashboard(e, r):
+    e("<h1>Heart Care Dashboard</h1>")
+
 def edit_profile(e, r):
     #get current user email
-    email="dataf4l@gmail.com"
+    email = get_email()
     u = db.GqlQuery("SELECT * FROM User WHERE email='"+email+"'")
     c = 0
     for i in u:
         c += 1
+        em = i["email"]
+        na = i["name"]
+
     if c == 0:
         e("no user found.")
         return
@@ -93,7 +100,8 @@ def edit_profile(e, r):
     e("<h1> Edit Profile</h1>")
     e("<label>Email:</label><br/><input type=text name=email value='"+em+"'>")
     e("<br/>")
-    e("<label>Name:</label><br/><input type=text name=name ><br/>")
+    e("<label>Name:</label><br/><input type=text name=name value='"+na+"' >")
+    e("<br/>")
     e("<label>Email How Often:</label><br/><select name=email_how_often>")
     e("<option value='weekly'>Weekly</option>")
     e("<option value='monthly'>Monthly</option>")
@@ -166,7 +174,7 @@ def add_measurement(e, r):
     m.when = when
     m.bpm = bpm
     m.save()
-    e("measurement Added.")
+    e(msg("Added", "measurement Added."))
 
 
 def json_measurements(e, r):
@@ -188,7 +196,9 @@ def menu(e, r):
     links = []
     #usertype
     links.append({"to": "?ac=show_users", 'label': 'Users'})
+    links.append({"to": "?ac=show_dashboard", 'label': 'Dashboard'})
     links.append({"to": "?ac=show_measurements", 'label': 'Measurements'})
+    links.append({"to": "?ac=show_add_measurement_form", 'label': 'New'})
     links.append({"to": "?ac=json_measurements", 'label': 'JSON'})
     links.append({"to": "?ac=my_profile", 'label': 'My Profile'})
     #
@@ -197,23 +207,34 @@ def menu(e, r):
     for i in links:
         a += "<a href='"+i["to"]+"'>"+i["label"]+"</a>&nbsp;"
     a += "</div>\n"
+    a += "<div class=wrapper>"
     e(a)
+
+
 def show_add_measurement_form(e, r):
     e("<form method=POST>")
     e("<input type=hidden name=ac value=add_measurement>")
     e("<h1> Add Measurement</h1>")
-    e("Email:<br/><input type=text name=email value=test@test.com><br/>")
-    e("BPM:<br/><input type=text name=bpm value=60><br/>")
+    #e("<label>Email:</label>")
+    e("<input type=hidden name=email value='"+get_email()+"'><br/>")
+    e("<label>BPM:</label><br/><input type=text name=bpm><br/>")
     d = "2013-01-01 00:00:00"
-    e("Date:<br/><input type=text name=when value='"+d+"'><br/>")
-    e("<input type=submit name=submit value='Upload Measurement'>")
+    e("<label>Date: (aaaa-mm-dd hh:ii:ss)</label><br/>")
+    e("<input type=text name=when value='"+d+"'><br/>")
+    e("<input type=submit name=submit value='Add Measurement'>")
     e("</form>")
-    e("<a href='?ac=show_measurements'>Show Measurements</a>")
+    #e("<a href='?ac=show_measurements'>Show Measurements</a>")
+
+
+def get_email():
+    #todo: implement!
+    return "dataf4l@gmail.com"
 
 
 def show_measurements(e, r):
-    m = Measurement.all()
-    e("<table border=1>")
+    email = get_email()
+    m = db.GqlQuery("SELECT * FROM Measurement WHERE email='"+email+"'")
+    e("<h1>Measurements</h1>")
     e("<table border=1>")
     e("<tr>")
     for a in ('Email', 'When', 'BPM'):
@@ -223,7 +244,7 @@ def show_measurements(e, r):
         e("<tr><td>" + i["email"] + "</td><td>" + i["when"] + "</td>")
         e("<td>" + i["bpm"] + "</td></tr>")
     e("</table>")
-
+    e("<a href='?ac=show_add_measurement_form'>Add Measurement</a>")
 
 class MainHandler(webapp2.RequestHandler):
     def post(self):
@@ -242,6 +263,8 @@ class MainHandler(webapp2.RequestHandler):
             menu(e, r)
             if ac == "default":
                 e(read_template("./template/start.html"))
+            elif ac == "show_dashboard":
+                show_dashboard(e, r)
             elif ac == "show_add_measurement_form":
                 show_add_measurement_form(e, r)
             elif ac == "show_users":
