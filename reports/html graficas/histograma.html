@@ -1,0 +1,50 @@
+<html>
+<head>
+<style>
+canvas{
+}
+</style>
+</head>
+<body>
+<canvas id="myChart" width="1000" height="400"></canvas>
+</body>
+<script src="Chart.js"></script>
+<script>
+var jsonvar = [{email:'test@test.com', when:'2013-01-01 00:00:00',bpm:'60'},{email:'test@test.com', when:'2013-01-02 00:00:00',bpm:'70'},{email:'test@test.com', when:'2013-01-02 00:00:00',bpm:'30'}];
+
+	var datainfo = [];
+	var labelinfo = [];
+	alert("llega antes de las variables");
+	alert("llega antes del for");
+	for(e in jsonvar){
+		datainfo.push(jsonvar[e].bpm);
+		labelinfo.push((jsonvar[e].when).substring(8,10)
+	}
+	
+
+	var lineChartData = {
+		labels : labelinfo,
+		datasets : [
+				{
+					fillColor : "rgba(220,220,220,0.5)",
+					strokeColor : "rgba(220,220,220,1)",
+					pointColor : "rgba(220,220,220,1)",
+					pointStrokeColor : "#fff",
+					data : datainfo
+				}/*futura opcion para generar comparaciones
+				{
+					fillColor : "rgba(151,187,205,0.5)",
+					strokeColor : "rgba(151,187,205,1)",
+					pointColor : "rgba(151,187,205,1)",
+					pointStrokeColor : "#fff",
+					data : [28,48,40,19,96,27,100]
+				}*/
+			]
+			
+	}
+
+	var myLine = new Chart(document.getElementById("myChart").getContext("2d")).Line(lineChartData);
+			
+
+</script>
+</html>

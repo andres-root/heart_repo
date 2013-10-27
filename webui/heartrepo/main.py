@@ -1,8 +1,12 @@
 #!/usr/bin/env python
 # vim: ts=4 shiftwidth=4 expandtab
+global lang
 
 import webapp2
 from google.appengine.ext import db
+from collections import OrderedDict
+
+lang = "es"
 
 
 class User(db.Model):
@@ -29,6 +33,8 @@ class Measurement(db.Model):
     dminute = db.StringProperty()
     when = db.StringProperty()
     bpm = db.StringProperty()
+    lon = db.StringProperty()
+    lat = db.StringProperty()
 
     def __getitem__(self, x):
         return getattr(self, x)
@@ -36,16 +42,21 @@ class Measurement(db.Model):
 
 def view_measurements(e, r):
     email = r.get("email")
-    e("<h1>Measurements of: " + email + "</h1>")
     m = db.GqlQuery("SELECT * FROM Measurement WHERE email='"+email+"'")
-    show_m(e, r, m)
+    show_m(e, r, m, email)
+    show_info(e)
+
+
+def show_info(e):
+    e(read_template("./template/info-rates.html"))
+
 
 def user_drop(e, r):
     email = r.get("email")
     a = db.GqlQuery("SELECT * FROM User WHERE email='" + email + "'")
     for i in a:
         i.delete()
-    e("User Deleted.")
+    e(t("User Deleted."))
 
 
 def read_template(a):
@@ -55,43 +66,131 @@ def read_template(a):
     return data
 
 
+i18n = {}
+i18n['Language'] = 'Idioma...'
+i18n['Add Measurement'] = 'Agregar Medici&oacute;n'
+i18n['Add User'] = 'Agrega Usuario'
+i18n['Admin'] = 'Administrador'
+i18n['BPM'] = 'Latidos por Minuto'
+i18n['Birth Date'] = 'Fecha de Nacimiento'
+i18n['Create User'] = 'Crear Usuario'
+i18n['Daily'] = 'Diaria'
+i18n['Date'] = 'Fecha'
+i18n['Do you Drink?'] = 'Consume Licor?'
+i18n['Do you Have a Heart Condition?'] = ('Tiene una Enfermedad del ' +
+                                          'Coraz&oacute;n?')
+i18n['Do you Smoke?'] = 'Fuma?'
+i18n['Doctor'] = 'Doctor'
+i18n['Drinker'] = 'Consume Licor?'
+i18n['Edit Profile'] = 'Editar Perfil'
+i18n['Email'] = 'Correo Electronico'
+i18n['Email How Often'] = 'Periodicidad de Email'
+i18n['Heart Care Dashboard'] = 'Cuadro de Control'
+i18n['Heart Condition'] = 'Enfermedad del Corazon'
+i18n['Measurements of'] = 'Mediciones de '
+i18n['Measurements'] = 'Mediciones'
+i18n['New'] = 'Nueva'
+i18n['My Profile'] = 'Mi Perfil'
+i18n['My Patients'] = 'Mis Pacientes'
+i18n['Register'] = 'Registro'
+i18n['Dashboard'] = 'Cuadro de Control'
+i18n['MobileHeartCare'] = 'MobileHeartCare'
+i18n['Monthly'] = 'Mensual'
+i18n['Name'] = 'Nombre'
+i18n['No'] = 'No'
+i18n['Smoker'] = 'Fumador'
+pep8 = 'Usa esta pantalla para crear nuevos  usuarios y asignarle roles'
+i18n['Use this screen to create new users and assign roles to them'] = pep8
+i18n['User'] = 'Usuario'
+i18n['User Type'] = 'Tipo de Usuario'
+i18n['Users'] = 'Usuarios'
+i18n['Weekly'] = 'Semanal'
+i18n['Yes'] = 'Si'
+i18n['admin'] = 'Admin'
+
+
+def t(s):
+    l = get_lang()
+    if l == "en":
+        return s
+
+    if not(s in i18n):
+        return "["+s+"]"
+    return i18n[s]
+
+
 def add_user(e, r):
     e("<form method=POST action='?'>")
     e("<input type=hidden name=ac value=add_user2>")
-    e("<h1> Add User</h1>")
-    e("<p>Use this screen to create new users and assign roles to them</p>")
-    e("<label>Email:</label><br/><input type=text name=email ><br/>")
-    e("<label>Name:</label><br/><input type=text name=name ><br/>")
-    e("<label>Email How Often:</label><br/><select name=email_how_often>")
-    e("<option value='weekly'>Weekly</option>")
-    e("<option value='monthly'>Monthly</option>")
-    e("<option value='daily'>Daily</option>")
+    e("<h1>"+t("Add User")+"</h1>")
+    e("<p>"+t("Use this screen to create new users and assign roles to them") +
+      "</p>")
+    e("<div class=l>")
+    e("<label>"+t("Email")+":</label><br/><input type=text name=email ><br/>")
+    e("<label>"+t("Name")+":</label><br/><input type=text name=name ><br/>")
+    e("<label>"+t("Email How Often") +
+      ":</label><br/><select name=email_how_often>")
+    e("<option value='weekly'>"+t("Weekly")+"</option>")
+    e("<option value='monthly'>"+t("Monthly")+"</option>")
+    e("<option value='daily'>"+t("Daily")+"</option>")
     e("</select><br/>")
 
-    e("<label>Birth Date:</label><br/><input type=text name=birth_date ><br/>")
-    e("<label>User Type:</label><br/><select name=user_type>")
-    e("<option value='user'>User</option>")
-    e("<option value='doctor'>Doctor</option>")
-    e("<option value='admin'>admin</option>")
+    e("<label>"+t("Birth Date")+":</label><br/>")
+    e("<select name=birth_year>")
+    for i in range(1900, 2100):
+        e("<option value="+str(i)+">"+str(i)+"</option>")
+    e("</select>")
+    e("<select name=birth_month>")
+    months = OrderedDict()
+    months["01"] = t("Jan")
+    months["02"] = t("Feb")
+    months["03"] = t("Mar")
+    months["04"] = t("Apr")
+    months["05"] = t("May")
+    months["06"] = t("Jun")
+    months["07"] = t("Jul")
+    months["08"] = t("Aug")
+    months["09"] = t("Sep")
+    months["10"] = t("Oct")
+    months["11"] = t("Nov")
+    months["12"] = t("Dec")
+    for i in months:
+        e("<option value="+i+">"+months[i]+"</option>")
+    e("</select>")
+    e("<select name=birth_date>")
+    for i in range(1, 31):
+        e("<option value="+str(i)+">"+str(i)+"</option>")
     e("</select><br/>")
 
-    e("<label>Do you Smoke?:</label><br/><select name=smoker>")
-    e("<option value='0'>No</option>")
-    e("<option value='1'>Yes</option>")
+    e("</div>")
+    e("<div class=l>")
+
+    e("<label>"+t("User Type")+":</label><br/>")
+    e("<select name=user_type>")
+    e("<option value='user'>"+t("User")+"</option>")
+    e("<option value='doctor'>"+t("Doctor")+"</option>")
+    e("<option value='admin'>"+t("Admin")+"</option>")
     e("</select><br/>")
 
-    e("<label>Do you Drink?:</label><br/><select name=drinker>")
-    e("<option value='0'>No</option>")
-    e("<option value='1'>Yes</option>")
+    e("<label>"+t("Do you Smoke?")+":</label><br/><select name=smoker>")
+    e("<option value='0'>"+t("No")+"</option>")
+    e("<option value='1'>"+t("Yes")+"</option>")
     e("</select><br/>")
 
-    e("<label>Do you Have a Heart Condition?:</label><br/>")
+    e("<label>"+t("Do you Drink?")+":</label><br/><select name=drinker>")
+    e("<option value='0'>"+t("No")+"</option>")
+    e("<option value='1'>"+t("Yes")+"</option>")
+    e("</select><br/>")
+
+    e("<label>"+t("Do you Have a Heart Condition?")+":</label><br/>")
     e("<select name=heart_condition>")
-    e("<option value='0'>No</option>")
-    e("<option value='1'>Yes</option>")
+    e("<option value='0'>"+t("No")+"</option>")
+    e("<option value='1'>"+t("Yes")+"</option>")
     e("</select><br/>")
 
-    e("<input type=submit name=submit value='Create User'>")
+    e("<input type=submit name=submit value='"+t("Create User")+"'>")
+    e("</div>")
+
     e("</form>")
 
 
@@ -109,8 +208,18 @@ def edit_profile2(e, r):
     pass
 
 
+def get_lang():
+    global lang
+    return lang
+
+
 def show_dashboard(e, r):
-    e("<h1>Heart Care Dashboard</h1>")
+    email = r.get("email", get_email())
+
+    e("<h1>"+t("Heart Care Dashboard")+"</h1>")
+    e("<script src='./template/reports/html_graphics/Chart.js'></script>")
+    e("<script>;var jsonvar = " + get_json(email) + ";</script>")
+    e(read_template("./template/reports/html_graphics/histogram.html"))
 
 
 def edit_profile(e, r):
@@ -128,24 +237,28 @@ def edit_profile(e, r):
         return
     e("<form method=POST action='?'>")
     e("<input type=hidden name=ac value=edit_profile2>")
-    e("<h1> Edit Profile</h1>")
-    e("<label>Email:</label><br/><input type=text name=email value='"+em+"'>")
+    e("<h1>"+t("Edit Profile")+"</h1>")
+    e("<label>"+t("Email") +
+      ":</label><br/><input type=text name=email value='"+em+"'>")
     e("<br/>")
-    e("<label>Name:</label><br/><input type=text name=name value='"+na+"' >")
+    e("<label>"+t("Name") +
+      ":</label><br/><input type=text name=name value='"+na+"' >")
     e("<br/>")
-    e("<label>Email How Often:</label><br/><select name=email_how_often>")
-    e("<option value='weekly'>Weekly</option>")
-    e("<option value='monthly'>Monthly</option>")
-    e("<option value='daily'>Daily</option>")
+    e("<label>"+t("Email How Often") +
+      ":</label><br/><select name=email_how_often>")
+    e("<option value='weekly'>"+t("Weekly")+"</option>")
+    e("<option value='monthly'>"+t("Monthly")+"</option>")
+    e("<option value='daily'>"+t("Daily")+"</option>")
     e("</select><br/>")
 
-    e("<label>Birth Date:</label><br/><input type=text name=birth_date ><br/>")
-    e("<label>User Type:</label><br/><select name=user_type>")
-    e("<option value='user'>User</option>")
-    e("<option value='doctor'>Doctor</option>")
-    e("<option value='admin'>admin</option>")
+    e("<label>"+t("Birth Date") +
+      ":</label><br/><input type=text name=birth_date><br/>")
+    e("<label>"+t("User Type")+":</label><br/><select name=user_type>")
+    e("<option value='user'>"+t("User")+"</option>")
+    e("<option value='doctor'>"+t("Doctor")+"</option>")
+    e("<option value='admin'>"+t("admin")+"</option>")
     e("</select><br/>")
-    e("<input type=submit name=submit value='Create User'>")
+    e("<input type=submit name=submit value='"+t("Create User")+"'>")
     e("</form>")
 
 
@@ -154,23 +267,31 @@ def add_user2(e, r):
     u.name = r.get("name")
     u.email = r.get("email")
     u.email_how_often = r.get("email_how_often")
-    u.birth_date = r.get("birth_date")
+    u.birth_date = (r.get("birth_year") + "-" + r.get("birth_month") + "-" +
+                    r.get("birth_date"))
     u.user_type = r.get("user_type")
+    u.smoker = r.get("smoker")
+    u.drinker = r.get("drinker")
+    u.heart_condition = r.get("heart_condition")
     u.save()
-    e("User Created.")
+    e(msg("User Created.", "User Created OK"))
 
 
 def show_users(e, r):
     u = User.all()
-    e("<h1>Users</h1>")
-    e("<table border=1>")
+    e("<h1>"+t("Users")+"</h1>")
+    e("<table border=1 cellspacing=0 cellpadding=0 class=dataset>")
     e("<tr>")
-    e("<th>Email</th>")
-    e("<th>Name</th>")
-    e("<th>Email How Often</th>")
-    e("<th>Birth Date</th>")
-    e("<th>User Type</th>")
+    e("<th>"+t("Email")+"</th>")
+    e("<th>"+t("Name")+"</th>")
+    e("<th>"+t("Email How Often")+"</th>")
+    e("<th>"+t("Birth Date")+"</th>")
+    e("<th>"+t("User Type")+"</th>")
+    e("<th>"+t("Smoker")+"</th>")
+    e("<th>"+t("Drinker")+"</th>")
+    e("<th>"+t("Heart Condition")+"</th>")
 
+    e("<th>&nbsp;</th>")
     e("<th>&nbsp;</th>")
     e("<th>&nbsp;</th>")
     e("</tr>")
@@ -181,17 +302,25 @@ def show_users(e, r):
         e("<td>"+str(i["email_how_often"])+"</td>")
         e("<td>"+str(i["birth_date"])+"</td>")
         e("<td>"+str(i["user_type"])+"</td>")
+        e("<td>"+str(i["smoker"])+"</td>")
+        e("<td>"+str(i["drinker"])+"</td>")
+        e("<td>"+str(i["heart_condition"])+"</td>")
         e("<td><a href='?ac=user_drop&email="+i["email"]+"'>[x]</a></td>")
-        e("<td><a href='?ac=view_measurements&email="+i["email"]+"'>View Measurements</a></td>")
+        e("<td><a href='?ac=view_measurements&email="+i["email"]+"'>")
+        e(t("Measurements")+"</a></td>")
+        e("<td><a href='?ac=show_dashboard&email="+i["email"]+"'>")
+        e(t("Dashboard")+"</a></td>")
         e("</tr>")
     e("</table>")
-    e("<a href='?ac=add_user'>Add User</a>")
+    e("<a href='?ac=add_user'>"+t("Add User")+"</a>")
 
 
 def add_measurement(e, r):
     mail = r.get("email", "")
     when = r.get("when", "")
     bpm = r.get("bpm", "")
+    lon = r.get("lon", "")
+    lat = r.get("lat", "")
     datepart = when.split(" ")[0]
     hourpart = when.split(" ")[1]
 
@@ -206,46 +335,62 @@ def add_measurement(e, r):
 
     m.when = when
     m.bpm = bpm
+
+    m.lon = lon
+    m.lat = lat
     m.save()
     e(msg("Added", "measurement Added."))
 
 
 def json_measurements(e, r):
-    m = Measurement.all()
-    e("[")
+    email = get_email()
+    e(get_json(email))
+
+
+def get_json(email):
+    m = db.GqlQuery("SELECT * FROM Measurement WHERE email='"+email+"'" +
+                    " ORDER BY when DESC")
+    ax = ""
+    ax += "["
     a = []
     for i in m:
         json = "{email:'"+i["email"]+"', when:"
         json += "'"+i["when"]+"',bpm:'"+i["bpm"]+"'}"
         a.append(json)
 
-    e(",".join(a))
-    e("]")
+    ax += ",".join(a)
+    ax += "]"
+    return ax
 
 
 def menu(e, r):
     a = "<div class=menu>"
     a += """<img onclick='location.href=\"/\";'
-                 width=150
                  valign=middle
                  class=logo
-                 height=50
+                 height=70
                  src='./media/logo.png'
-                 alt='HeartCare' />"""
+                 alt='"""+t("MobileHeartCare")+"""' />"""
     links = []
     #usertype
-    links.append({"to": "?ac=show_users", 'label': 'Users'})
-    links.append({"to": "?ac=show_dashboard", 'label': 'Dashboard'})
-    links.append({"to": "?ac=show_measurements", 'label': 'Measurements'})
-    links.append({"to": "?ac=show_add_measurement_form", 'label': 'New'})
+    links.append({"to": "?ac=show_users", 'label': t('Users')})
+    links.append({"to": "?ac=show_dashboard", 'label': t('Dashboard')})
+    links.append({"to": "?ac=show_measurements", 'label': t('Measurements')})
+    links.append({"to": "?ac=show_add_measurement_form", 'label': t('New')})
     links.append({"to": "?ac=json_measurements", 'label': 'JSON'})
-    links.append({"to": "?ac=my_profile", 'label': 'My Profile'})
+    links.append({"to": "?ac=my_profile", 'label': t('My Profile')})
     #
-    links.append({"to": "?ac=my_patients", 'label': 'My Patients'})
-    links.append({"to": "?ac=register", 'label': 'Register'})
+    #links.append({"to": "?ac=my_patients", 'label': t('My Patients')})
+    links.append({"to": "?ac=register", 'label': t('Register')})
 
     for i in links:
         a += "<a href='"+i["to"]+"'>"+i["label"]+"</a>&nbsp;"
+
+    a += """<select onchange='location.href=\"/\"+this.value'>
+    <option value=en>"""+t("Language")+"""</option>
+    <option value=en>English</option>
+    <option value=es>Espa&ntilde;ol</option>
+    </select>"""
     a += "</div>\n"
     a += "<div class=wrapper>"
     e(a)
@@ -254,14 +399,14 @@ def menu(e, r):
 def show_add_measurement_form(e, r):
     e("<form method=POST action='?ac=add_measurement'>")
     e("<input type=hidden name=ac value=add_measurement>")
-    e("<h1> Add Measurement</h1>")
+    e("<h1>"+t("Add Measurement")+"</h1>")
     #e("<label>Email:</label>")
     e("<input type=hidden name=email value='"+get_email()+"'><br/>")
-    e("<label>BPM:</label><br/><input type=text name=bpm><br/>")
+    e("<label>"+t("BPM")+":</label><br/><input type=text name=bpm><br/>")
     d = "2013-01-01 00:00:00"
-    e("<label>Date: (aaaa-mm-dd hh:ii:ss)</label><br/>")
+    e("<label>"+t("Date")+": (aaaa-mm-dd hh:ii:ss)</label><br/>")
     e("<input type=text name=when value='"+d+"'><br/>")
-    e("<input type=submit name=submit value='Add Measurement'>")
+    e("<input type=submit name=submit value='"+t("Add Measurement")+"'>")
     e("</form>")
     #e("<a href='?ac=show_measurements'>Show Measurements</a>")
 
@@ -275,19 +420,23 @@ def show_measurements(e, r):
     email = get_email()
     m = db.GqlQuery("SELECT * FROM Measurement WHERE email='"+email+"'")
     show_m(e, r, m, email)
+    show_info(e)
     e("<a href='?ac=show_add_measurement_form'>Add Measurement</a>")
 
 
 def show_m(e, r, m, email):
-    e("<h1>Measurements: "+email+"</h1>")
-    e("<table border=1>")
+    e("<h1>"+t("Measurements of")+": "+email+"</h1>")
+    e("<table border=1 cellspacing=0 cellpadding=0  class=dataset>")
     e("<tr>")
-    for a in ('Email', 'When', 'BPM'):
-        e("<th>" + a + "</th>")
+    for a in ('Email', 'Date', 'BPM', 'Lon', "Lat"):
+        e("<th>" + t(a) + "</th>")
     e("</tr>")
     for i in m:
         e("<tr><td>" + i["email"] + "</td><td>" + i["when"] + "</td>")
-        e("<td>" + i["bpm"] + "</td></tr>")
+        e("<td>" + str(i["bpm"]) + "</td>")
+        e("<td>" + str(i["lon"]) + "</td>")
+        e("<td>" + str(i["lat"]) + "</td>")
+        e("</tr>")
     e("</table>")
 
 
@@ -296,10 +445,19 @@ class MainHandler(webapp2.RequestHandler):
         self.get()
 
     def get(self):
+        global lang
         #name = self.request.get("name", "none")
         ac = self.request.get("ac", "default")
         r = self.request
         e = self.response.write
+
+        #lang
+        lname = r.url.replace("http://", "").split("/")[1].split("?")[0]
+        if lname == "":
+            lname = "es"
+        langs = ("en", "es")
+        if lname in langs:
+            lang = lname
 
         if ac == "json_measurements":
             json_measurements(e, r)
@@ -307,7 +465,9 @@ class MainHandler(webapp2.RequestHandler):
             e(read_template("./template/header.html"))
             menu(e, r)
             if ac == "default":
-                e(read_template("./template/start.html"))
+                dx = read_template("./template/start."+get_lang()+".html")
+                dx = dx.replace("[#lang]", get_lang())
+                e(dx)
             elif ac == "show_dashboard":
                 show_dashboard(e, r)
             elif ac == "show_add_measurement_form":
@@ -328,8 +488,6 @@ class MainHandler(webapp2.RequestHandler):
                 user_drop(e, r)
             elif ac == "view_measurements":
                 view_measurements(e, r)
-
-                
             elif ac == "edit_profile":
                 edit_profile(e, r)
             elif ac == "edit_profile2":
@@ -341,6 +499,7 @@ class MainHandler(webapp2.RequestHandler):
                 e(msg("ERROR", "Invalid Action:" + r.get("ac")))
             e(read_template("./template/footer.html"))
 
+
 app = webapp2.WSGIApplication([
-    ('/', MainHandler)
+    ('/', MainHandler), ('/es', MainHandler), ('/en', MainHandler)
 ], debug=True)
