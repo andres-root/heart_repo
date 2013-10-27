@@ -192,7 +192,13 @@ def json_measurements(e, r):
 
 def menu(e, r):
     a = "<div class=menu>"
-    a += "<img onclick='location.href=\"/\";' width=150 valign=middle class=logo height=50 src='./media/logo.png' alt='HeartCare' /></a>"
+    a += """<img onclick='location.href=\"/\";'
+                 width=150
+                 valign=middle
+                 class=logo
+                 height=50
+                 src='./media/logo.png'
+                 alt='HeartCare' />"""
     links = []
     #usertype
     links.append({"to": "?ac=show_users", 'label': 'Users'})
@@ -212,7 +218,7 @@ def menu(e, r):
 
 
 def show_add_measurement_form(e, r):
-    e("<form method=POST>")
+    e("<form method=POST action='?ac=add_measurement'>")
     e("<input type=hidden name=ac value=add_measurement>")
     e("<h1> Add Measurement</h1>")
     #e("<label>Email:</label>")
