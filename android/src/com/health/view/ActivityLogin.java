@@ -15,15 +15,16 @@ public class ActivityLogin extends Activity
 	
 	private  EditText user;
 	private  EditText pass;
-
+	
 	public void onCreate(Bundle savedInstanceState)
 	{        
-		        super.onCreate(savedInstanceState);
-		        requestWindowFeature(Window.FEATURE_NO_TITLE); 
-		        setContentView(R.layout.activity_login);
+		      super.onCreate(savedInstanceState);
+		      requestWindowFeature(Window.FEATURE_NO_TITLE); 
+		      setContentView(R.layout.activity_login);
 		        
-		        user = (EditText) findViewById(R.id.editText1);
-		        pass = (EditText) findViewById(R.id.editText2);		               
+		      user = (EditText) findViewById(R.id.editText1);
+		      pass = (EditText) findViewById(R.id.editText2);			        		        
+		        
     }
 		
 	public void login(View v) {
@@ -32,16 +33,11 @@ public class ActivityLogin extends Activity
 			String rUser = user.getText().toString();
 			String rPass = pass.getText().toString();
 		
-			AsyncTaskLogin login = new AsyncTaskLogin();
-			
-			//if(rUser.equals("roluisker")  && rPass.equals("")){
-				
-				Intent intent = new Intent(ActivityLogin.this, Main.class);
-       		 	startActivity(intent);
-       		 	finish();
-				
-			//}
-						
+			//AsyncTaskLogin login = new AsyncTaskLogin();
+
+			Intent intent = new Intent(ActivityLogin.this, Main.class);
+       		startActivity(intent);       	 	
+       		finish();
 		
 	}
 	

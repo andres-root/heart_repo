@@ -31,10 +31,13 @@ public class AsyncTaskRate extends AsyncTask<String, Void, String>
 	
 				values = new ArrayList<NameValuePair>(1);    	    
 				values.add(new BasicNameValuePair("email", arg0[0]));
-				values.add(new BasicNameValuePair("BPM",  arg0[1]));
+				values.add(new BasicNameValuePair("bpm",  arg0[1]));
 				values.add(new BasicNameValuePair("when", arg0[2]));
-				values.add(new BasicNameValuePair("ac","add_measurement"));
 				
+				values.add(new BasicNameValuePair("lon",arg0[3]));
+				values.add(new BasicNameValuePair("lat",arg0[4]));
+				values.add(new BasicNameValuePair("ac","add_measurement"));
+			
 	   	   	
 				try{    
 				 

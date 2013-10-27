@@ -8,6 +8,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,6 +24,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 import com.health.mod.AsyncTaskRate;
+import com.health.mod.GeoLocation;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GraphViewSeries;
 import com.jjoe64.graphview.LineGraphView;
@@ -44,14 +47,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class Main extends Activity{
-	
-	   /* 
-	   		private Button buttonOne;
-	   		private Button buttonTwo;
-	   		private Button buttonTree;
-	   		private Button buttonFourt;
-	   */
-	   	   	
+
 	   private static final String TAG_DEBUG = "Bluetooth: "; 
 	   
 	   //Handler
@@ -72,21 +68,73 @@ public class Main extends Activity{
 	   int cont = -1;
 	   
 	   //TEMP DATA
-	   ArrayList<String> items = new  ArrayList<String>();
-	   
+	   private ArrayList<String> items = new  ArrayList<String>();
+	   private ArrayList<Integer> itemsRate = new ArrayList<Integer>();
+	   	   
 	   /*
 	    * GRAFICA	 
-	    */
-	   
+	    */	   
 	   	private final Handler mHandler = new Handler();
 	   	private Runnable mTimer2;
 	   	private GraphView graphView;
 	   	private GraphViewSeries exampleSeries2;
 	   	private double graph2LastXValue = 5d;
-	   	private GraphViewSeries exampleSeries3;
-	   
+	   	private GraphViewSeries exampleSeries3;	   
+	    	
+	   	public  String calculateRate(){
+			
+	   		//int[] data = {1023,1023,1023,1023,1023,1023,1023,1023,1023,1023,1023,1023,1023,1023,1023,1023,1023,1023,1023,1023,1023,1021,1023,1021,1022,1022,1021,1022,1021,1022,1022,1022,1021,1022,1022,1022,1022,1022,1022,1021,1021,1022,1021,1022,1022,1022,1021,1022,1021,1021,1022,1021,1022,1022,1021,1021,1022,1022,1022,1022,1021,1022,1022,1022,1021,1022,1022,1021,1022,1022,1022,1022,1022,1021,1021,1021,1022,1021,1022,1022,1022,1022,1022,1021,1022,1022,1023,1022,1021,1022,1022,1022,1021,1021,1021,1022,1021,1022,1022,1022,1021,1022,1023,1022,1022,1021,1021,1022,1022,1022,1021,1022,1022,1022,1021,1022,1022,1022,1022,1022,1020,1022,1022,1022,1022,1022,1022,1022,1022,1022,1022,1021,1021,1021,1022,1022,1022,1021,1021,1021,1022,1022,1022,1021,1022,1022,1022,1022,1022,1022,1021,1022,1021,1022,1022,1022,1022,1021,1022,1023,1022,1022,1022,1022,1022,1022,1021,1022,1022,1022,1021,1022,1022,1022,1022,1022,1022,1022,1022,1022,1021,1022,1022,1022,1022,1022,1021,1021,1021,1022,1022,1023,1022,1021,1022,1022,1022,1022,1021,1022,1022,1021,1021,1022,1022,1021,1021,1022,1023,1022,1023,1022,1023,1022,1022,1022,1022,1022,1022,1022,1022,1021,1022,1022,1022,1022,1022,1022,1022,1022,1022,1022,1022,1022,1022,1021,1022,1021,1022,1022,1021,1022,1022,1022,1022,1021,1022,1022,1022,1022,1022,1022,1022,1021,1022,1022,1022,1022,1022,1022,1022,1022,1022,1022,1022,1022,1022,1022,1022,1023,1022,1022,1022,1022,1023,1023,1023,1023,1023,1023,1023,1023,1023,1023};
+
+			double bpm = 0;
+			double s = 0;
+			int valid = 0;
+			double mps = 250;
+			HashMap<Integer, Integer> cosito = new HashMap<Integer, Integer>();
+			List<Integer> listValid = new ArrayList<Integer>();
+			
+			int contList = 0;
+			
+			
+			
+			for(int temp : itemsRate){
+				
+			
+				if(listValid.contains(temp)){
+					
+					int tempValueList = listValid.get(contList);
+					
+					contList++;
+					
+				}else{
+					
+					//listValid.add();
+					
+				}
+				
+				if(temp != 1023) {
+                    int valor;
+                    valid++;
+					if(cosito.containsKey(temp)) {
+						valor = (int) cosito.get(temp);
+                    	cosito.put(temp, valor + 1);
+					}
+                    else {
+                    	cosito.put(temp, 1);
+                    }
+				}				
+			}
+			
+			//Collections.sort(cosito,Collections.reverseOrder());
+			
+			bpm = s / (valid*(mps/1000.0)/60.0);
+			
+			return String.valueOf(bpm);
+								
+
+		}
 	   		
-	   	private double getBuffer(){
+	   	private double getBuffer()
+	   	{
 
 	   			try{
 	   				
@@ -101,12 +149,25 @@ public class Main extends Activity{
 	   					
 	   				}
 	   				
-	   				double result =  ( Double.parseDouble(items.get(cont)) ) * -1;
-	   				
-	   				AsyncTaskRate rate = new AsyncTaskRate();
-			   		rate.execute("roluisker@gmail.com",String.valueOf(result),getDateTime());
-	   				
-	   				Log.d("RESULTADO MOMENTANEO: ", String.valueOf(result));
+	   					double result =  ( Double.parseDouble(items.get(cont)) ) * -1;
+	   					
+	   					itemsRate.add( (int) result);
+	   					
+	   					if(itemsRate.size() %  250==0){
+	   						
+			   					GeoLocation geoLo = new GeoLocation(1, this);
+				   				double[] geo = geoLo.getLocation();	   				
+				   				
+				   				AsyncTaskRate rate = new AsyncTaskRate();
+				   				String r2 = this.calculateRate();
+						   		rate.execute("dataf4l@gmail.com",String.valueOf(r2),getDateTime(),String.valueOf(geo[0]) , String.valueOf(geo[1]) );
+			   					
+						   		textMsg.setText(r2);
+						   		Log.d("RESULTADO MOMENTANEO: ", String.valueOf(result));
+						   		itemsRate.clear();
+						   		
+	   					}
+		   				
 	   				
 	   				return result;
 	   				
@@ -118,7 +179,7 @@ public class Main extends Activity{
 	   				
 	   			}
 	   			
-	   		}
+	   }
 	   
 	   /*
 			GRAFICA
@@ -146,19 +207,16 @@ public class Main extends Activity{
 		   		 /*
 		   		  * 
 		   		  * GRAFICA
-		   		  */
-		   		 
+		   		  */		   		 
 		   		 	exampleSeries3 = new GraphViewSeries(new GraphViewData[] {});
 		   		 	exampleSeries3.getStyle().color = Color.CYAN;
 
 					graphView = new LineGraphView(
-							this // context
-							, "GraphViewDemo" // heading
+								this //context
+								, "Rate" //heading
 					);
 					
-
 				graphView.addSeries(exampleSeries3);
-
 
 				exampleSeries2 = new GraphViewSeries(new GraphViewData[] {
 						new GraphViewData(1, 2.0d)
@@ -170,8 +228,8 @@ public class Main extends Activity{
 				});
 
 				graphView = new LineGraphView(
-						this
-						, "GraphViewDemo"
+							this
+							, "Rate"
 				);
 				((LineGraphView) graphView).setDrawBackground(true);
 				
@@ -180,8 +238,7 @@ public class Main extends Activity{
 				graphView.setScalable(true);
 
 				LinearLayout layout = (LinearLayout) findViewById(R.id.graph2);
-				layout.addView(graphView);
-		   		 
+				layout.addView(graphView);		   		 
 		   		 
 		   		 /*
 		   		  * GRAFICA
@@ -259,25 +316,18 @@ public class Main extends Activity{
 		   	    mConnectedThread = new ConnectedThread(btSocket);
 		   	    mConnectedThread.start();	
 		   	    
-		   	    /*
-		   	     * GRAFICA
-		   	     * 
-		   	     */
-		   	    
-		   	   mTimer2 = new Runnable(){
+		   	    mTimer2 = new Runnable(){
 					@Override
 					public void run(){
 						graph2LastXValue += 1d;
 						exampleSeries2.appendData(new GraphViewData(graph2LastXValue, getBuffer()), true, 10);
 						mHandler.postDelayed(this, 200);
+						//aqui
 					}
 				};
 				
 				mHandler.postDelayed(mTimer2, 1000);
 
-		   	    /*
-		   	     * GRAFICA
-		   	     */
 		   
 	   }
 	   
@@ -286,8 +336,10 @@ public class Main extends Activity{
 	   @Override
 	   public void onPause()
 	   {
-		   mHandler.removeCallbacks(mTimer2);
-		   	  super.onPause();		   	  
+		   	  mHandler.removeCallbacks(mTimer2);
+		   	  
+		   	  super.onPause();	
+		   	  
 		   	  Log.d(TAG_DEBUG, "PAUSE TIME!!");
 		   	  
 		   	  try{
