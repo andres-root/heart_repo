@@ -9,6 +9,7 @@ import java.util.UUID;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -27,7 +28,7 @@ public class Main extends Activity {
 	   private Button buttonTree;
 	   private Button buttonFourt;
 	   private static final String TAG_DEBUG = "Bluetooth: "; 
-	
+	   
 	   //Handler
 	   private  Handler h;
 	   final int RECIEVE_MESSAGE = 1;
@@ -146,23 +147,24 @@ public class Main extends Activity {
 			      
 			    }else{
 			    	
-			      if (btAdapter.isEnabled()) 
-			      {
-			    	  
-			    	  Log.d(TAG_DEBUG, "...Bluetooth ON...");
-			      
-			      }else{
-			        
-			        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-			        startActivityForResult(enableBtIntent, 1);
-			        
-			      }
+				      if (btAdapter.isEnabled()) 
+				      {
+				    	  
+				    	  Log.d(TAG_DEBUG, "...Bluetooth ON...");
+				      
+				      }else{
+				        
+				        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+				        startActivityForResult(enableBtIntent, 1);
+				        
+				      }
 			      
 			    }
 		    
 		}
 	   	   	   
-	   public void initializeHandler()
+	   @SuppressLint("HandlerLeak")
+	public void initializeHandler()
 	   {
 		  
 			   h = new Handler(){
@@ -186,13 +188,13 @@ public class Main extends Activity {
 					            		
 							   							String sbprint = sb.substring(0, endOfLineIndex);				
 							   							sb.delete(0, sb.length());										
-							   							textMsg.setText("");
+							   							textMsg.setText(sbprint);
 							   							//txtArduino.setText("Data from Arduino: " + sbprint); 	        
 							   							//btnOff.setEnabled(true);
 							   							//btnOn.setEnabled(true);
 					                	
 							   						}
-					            	
+							   			
 							   			break;
 							   			
 					    		}

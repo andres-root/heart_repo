@@ -2,7 +2,6 @@ package com.health.mod;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -16,44 +15,41 @@ import org.apache.http.util.EntityUtils;
 import android.os.AsyncTask;
 import android.util.Log;
 
-
 public class AsyncTaskRate extends AsyncTask<String, Void, String> 
 {
-
-	private HttpClient cliente;
-	private HttpPost metodoPost;
-	private HttpResponse respuesta;
-	private List<NameValuePair> valores;
+	
+	private HttpClient client;
+	private HttpPost methodPost;
+	
+	private HttpResponse response;
+	private List<NameValuePair> values;
 	
 	@Override
 	protected String doInBackground(String... arg0)
 	{
-	   
-	  
+				
 				String jsonR = ""; 
 	
-				valores = new ArrayList<NameValuePair>(1);    	    
-				valores.add(new BasicNameValuePair("", arg0[0]));
-				valores.add(new BasicNameValuePair("",  arg0[1]));
+				values = new ArrayList<NameValuePair>(1);    	    
+				values.add(new BasicNameValuePair("", arg0[0]));
+				values.add(new BasicNameValuePair("",  arg0[1]));
 	   	   	
 				try{    
 				 
-				           cliente = new DefaultHttpClient();
-				           metodoPost = new HttpPost("");
+						   client = new DefaultHttpClient();
+						   methodPost = new HttpPost("");
 				           
-				           metodoPost.setHeader("Accept","application/json");
+						   methodPost.setHeader("Accept","application/json");
 				 				           
-				           //Log.d("ENCODE ANDROID", new UrlEncodedFormEntity(valores).);
-				           
-				           metodoPost.setEntity(new UrlEncodedFormEntity(valores));
+						   methodPost.setEntity(new UrlEncodedFormEntity(values));
 				        
-				           respuesta = cliente.execute(metodoPost);
+						   response = client.execute(methodPost);
 				           
-				           HttpEntity httpEnti = respuesta.getEntity();
+				           HttpEntity httpEnti = response.getEntity();
 				           
 				           jsonR = EntityUtils.toString(httpEnti);
 				           
-				           Log.i("Respuesta LOGIN   : ", jsonR);		      
+				           Log.i("Response LOGIN   : ", jsonR);		      
 				           
 				           return jsonR;
 				           
@@ -64,11 +60,13 @@ public class AsyncTaskRate extends AsyncTask<String, Void, String>
 	
 	}
 	
+	
 	@Override
 	protected void onPostExecute(String result)
 	{
 		
 	}
 
+	
 }
 
