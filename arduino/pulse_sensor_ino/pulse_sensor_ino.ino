@@ -11,6 +11,7 @@ void setup() {
 
 
 void loop() {
+  
   digitalWrite(IRled, HIGH);
   while(true) {
     if(analogRead(A0)) {
