@@ -2,20 +2,17 @@
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="#A4A4A4" >
-
-
+        android:background="#FFF" >
 
       <ScrollView
 	    android:id="@+id/scroller"
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent"
 	    android:fillViewport="true"
-	    android:layout_marginLeft="10dip"
-	    android:layout_marginRight="10dip"
-	    android:layout_marginBottom="10dip"
-	    android:layout_marginTop="10dip"
-
+	    android:layout_marginLeft="10dp"
+	    android:layout_marginRight="10dp"
+	    android:layout_marginBottom="10dp"
+	    android:layout_marginTop="10dp"
 	    >
         
         <TableLayout
@@ -27,7 +24,7 @@
             android:background="#ffffff" 
             >
 
-            <TableRow
+           <TableRow
                 android:id="@+id/tableRow1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -35,18 +32,13 @@
            
                  >
 
-                    <TextView
-                        android:id="@+id/textView1"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginTop="10dip"
-                        android:layout_marginLeft="10dip"
-                        
-                        android:text="Login"
-                        android:textAppearance="?android:attr/textAppearanceMedium" />
+                <ImageView
+                    android:id="@+id/imageView1"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:src="@drawable/up_login" />
 
-                    
+
 
                 </TableRow>
 
@@ -54,15 +46,15 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginLeft="0dip" >
+                android:layout_marginLeft="0dp" >
                     
                     <View
                 android:id="@+id/viewUno"
                 android:layout_width="fill_parent"
-                android:layout_height="1dip"
+                android:layout_height="1dp"
                                            
                 android:background="#4B088A" 
-                android:layout_marginTop="5dip"
+                android:layout_marginTop="5dp"
                 android:visibility="invisible"
                 />
                    
@@ -73,15 +65,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginTop="20dip" >
+                android:layout_marginTop="20dp" >
 
                     <EditText
                         android:id="@+id/editText1"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="20dip"
-                        android:layout_marginLeft="10dip"
-                        android:layout_marginRight="10dip"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
                         android:layout_weight="1"
                         android:hint="Email"
                         android:ems="10"
@@ -103,9 +95,9 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:hint="Password"
-                        android:layout_marginTop="30dip"
-                        android:layout_marginLeft="10dip"
-                        android:layout_marginRight="10dip"
+                        android:layout_marginTop="30dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
                         android:ems="10"
                         android:inputType="textPassword" 
                         
@@ -132,7 +124,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginBottom="10dp"
-                        android:layout_marginTop="50dip"
+                        android:layout_marginTop="50dp"
                         android:layout_marginLeft="10dp"
                         android:text="Sign In" />
 
