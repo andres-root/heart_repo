@@ -16,6 +16,9 @@ void loop() {
     if(analogRead(A0)) {
       ret = (int) analogRead(A0);
       Serial.println(ret);
+      
+      
+      
      //buff.concat(ret);
       //buff.concat(",");
       //Serial.println(c);
