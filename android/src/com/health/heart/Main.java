@@ -73,39 +73,42 @@ public class Main extends Activity{
 	   //TEMP DATA
 	   ArrayList<String> items = new  ArrayList<String>();
 	   
-	   /*GRAFICA
+	   /*
+	    * GRAFICA	 
 	    */
 	   
-	   
-	   		private final Handler mHandler = new Handler();
-	   		private Runnable mTimer2;
-	   		private GraphView graphView;
-	   		private GraphViewSeries exampleSeries2;
-	   		private double graph2LastXValue = 5d;
-	   		private GraphViewSeries exampleSeries3;
+	   	private final Handler mHandler = new Handler();
+	   	private Runnable mTimer2;
+	   	private GraphView graphView;
+	   	private GraphViewSeries exampleSeries2;
+	   	private double graph2LastXValue = 5d;
+	   	private GraphViewSeries exampleSeries3;
 	   
 	   		
-	   		private double getBuffer(){
+	   	private double getBuffer(){
 
 	   			try{
 	   				
-	   				if(cont < items.size()){
+	   				if(cont < items.size())
+	   				{
 	   					
 	   					cont++;
 	   					
 	   				}else{
 	   					
-	   					cont = 0;
+	   					return 123.0;
+	   					//cont = 0;
 	   					
 	   				}
 	   				
-	   				double result = Double.parseDouble(items.get(cont));
+	   				double result =  ( Double.parseDouble(items.get(cont)) ) * -1;
 	   				
 	   				Log.d("RESULTADO MOMENTANEO: ", String.valueOf(result));
 	   				
 	   				return result;
 	   				
-	   			}catch(Exception err){
+	   			}catch(Exception err)
+	   			{
 	   				
 	   				   cont = 0;
 	   				   return 123.0;
@@ -142,8 +145,8 @@ public class Main extends Activity{
 		   		  * GRAFICA
 		   		  */
 		   		 
-		   		exampleSeries3 = new GraphViewSeries(new GraphViewData[] {});
-				exampleSeries3.getStyle().color = Color.CYAN;
+		   		 	exampleSeries3 = new GraphViewSeries(new GraphViewData[] {});
+		   		 	exampleSeries3.getStyle().color = Color.CYAN;
 
 					graphView = new LineGraphView(
 							this // context
@@ -223,7 +226,8 @@ public class Main extends Activity{
 		   			
 		   				btSocket = createBluetoothSocket(device);
 		   			
-		   		}catch(IOException err){
+		   		}catch(IOException err)
+		   		{
 		   			   					   			
 		   				errorExit(err.getMessage());		   			
 		   		}
@@ -254,9 +258,10 @@ public class Main extends Activity{
 		   	    
 		   	    /*
 		   	     * GRAFICA
+		   	     * 
 		   	     */
 		   	    
-		   	 mTimer2 = new Runnable(){
+		   	   mTimer2 = new Runnable(){
 					@Override
 					public void run(){
 						graph2LastXValue += 1d;
@@ -266,8 +271,7 @@ public class Main extends Activity{
 				};
 				
 				mHandler.postDelayed(mTimer2, 1000);
-		   	    
-		   	    
+
 		   	    /*
 		   	     * GRAFICA
 		   	     */
@@ -346,7 +350,8 @@ public class Main extends Activity{
 							   							String sbprint = sb.substring(0, endOfLineIndex);				
 							   							sb.delete(0, sb.length());										
 							   							
-							   							textMsg.setText(String.valueOf(sbprint));
+							   							//textMsg.setText("INICIO:  "+String.valueOf(sbprint)+": FIN!!!");
+							   							
 							   							getData(sbprint);							   							
 							   							//sendData();
 							   							//AsyncTaskRate rate = new AsyncTaskRate();
@@ -368,6 +373,8 @@ public class Main extends Activity{
 		{
 							
 				items =  new  ArrayList<String>(Arrays.asList(data.split(",")));
+				
+				cont = 0;
 				//textMsg.setText(String.valueOf( items.size() ));
 				//Log.d(TAG_DEBUG, String.valueOf( items.size() ) );			
 				
